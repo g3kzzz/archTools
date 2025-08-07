@@ -57,6 +57,8 @@ YAY_TOOLS=(
   powershell
   openssh
   metasploit-git
+  smbclient
+  smbmap
   hash-identifier-git
   hashid
 )
