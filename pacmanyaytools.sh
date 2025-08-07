@@ -51,6 +51,7 @@ YAY_TOOLS=(
   hashcat-git
   john-git
   hashcat-utils-git
+  medusa-git
   seclists
   burpsuite
   powershell
