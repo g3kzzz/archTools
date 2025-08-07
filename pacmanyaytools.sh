@@ -60,6 +60,7 @@ YAY_TOOLS=(
   smbclient
   smbmap
   hash-identifier-git
+  enum4linux-git
   hashid
 )
 
