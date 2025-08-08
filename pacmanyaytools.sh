@@ -49,6 +49,7 @@ YAY_TOOLS=(
   powershell
   openssh
   metasploit-git
+  crowbar
   smbclient
   mssql-tools
   go-sqlcmd
