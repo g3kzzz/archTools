@@ -57,6 +57,7 @@ YAY_TOOLS=(
   mssql-tools
   go-sqlcmd
   hash-identifier-git
+  netexec
   subfinder
   enum4linux-git
   hashid
