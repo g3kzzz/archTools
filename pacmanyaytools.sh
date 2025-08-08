@@ -83,3 +83,6 @@ done
 for tool in "${YAY_TOOLS[@]}"; do
   instalar yay "$tool"
 done
+
+sudo pacman -S python-pyasn1-modules --overwrite "/usr/lib/python3.13/site-packages/*"
+yay -S enum4linux-git
