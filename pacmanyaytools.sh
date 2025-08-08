@@ -29,6 +29,7 @@ PACMAN_TOOLS=(
   openssh
   tree
   locate
+  arp-scan
   exiftool
   gnu-netcat
   mysql
@@ -44,7 +45,6 @@ YAY_TOOLS=(
   john-git
   hashcat-utils-git
   medusa
-  seclists
   burpsuite
   powershell
   openssh
@@ -52,7 +52,6 @@ YAY_TOOLS=(
   smbclient
   mssql-tools
   go-sqlcmd
-  smbmap
   hash-identifier-git
   enum4linux-git
   hashid
