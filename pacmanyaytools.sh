@@ -47,6 +47,7 @@ YAY_TOOLS=(
   hashcat-utils-git
   medusa
   nmap-git
+  hydra-git
   burpsuite
   powershell
   openssh
