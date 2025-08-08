@@ -51,6 +51,7 @@ PACMAN_TOOLS=(
 # Yay (AUR)
 YAY_TOOLS=(
   hashcat-git
+  ruby-evil-winrm
   john-git
   hashcat-utils-git
   medusa
