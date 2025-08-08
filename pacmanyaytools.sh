@@ -43,6 +43,7 @@ YAY_TOOLS=(
   hashcat-git
   ruby-evil-winrm
   john-git
+  smtp-user-enum-git
   hashcat-utils-git
   medusa
   burpsuite
