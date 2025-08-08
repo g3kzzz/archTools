@@ -37,6 +37,7 @@ instalar() {
 # Pacman
 PACMAN_TOOLS=(
   openvpn
+  openssh
   tree
   locate
   exiftool
@@ -58,6 +59,9 @@ YAY_TOOLS=(
   openssh
   metasploit-git
   smbclient
+  mssql-tools
+  go-sqlcmd
+  
   smbmap
   hash-identifier-git
   enum4linux-git
