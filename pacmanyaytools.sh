@@ -46,6 +46,7 @@ YAY_TOOLS=(
   smtp-user-enum-git
   hashcat-utils-git
   medusa
+  nmap-git
   burpsuite
   powershell
   openssh
