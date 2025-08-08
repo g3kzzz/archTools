@@ -9,29 +9,18 @@ if [[ $EUID -ne 0 ]]; then
 fi
 
 # ========================
-# Función para instalar
+# Autenticación sudo una sola vez
 # ========================
-instalar() {
-  local tipo=$1
-  local herramienta=$2
+echo "[*] Autenticando sudo (una sola vez)..."
+sudo -v
 
-  if [[ "$tipo" == "pacman" ]]; then
-    echo "[*] Instalando $herramienta..."
-    sudo -u "$SUDO_USER" yay -S --noconfirm "$herramienta" &> /dev/null
-  elif [[ "$tipo" == "yay" ]]; then
-    echo "[*] Instalando $herramienta..."
-    sudo -u "$SUDO_USER" yay -S --noconfirm "$herramienta" &> /dev/null
-  fi
-
-  if [[ $? -eq 0 ]]; then
-    echo "[✔] $herramienta instalado correctamente."
-  else
-    echo "[✘] Error al instalar $herramienta."
-  fi
-}
+# Mantener sudo vivo
+while true; do sudo -n true; sleep 60; done 2>/dev/null &
+SUDO_KEEPALIVE_PID=$!
+trap 'kill $SUDO_KEEPALIVE_PID' EXIT
 
 # ========================
-# Lista de herramientas
+# Listas de herramientas
 # ========================
 
 # Pacman
@@ -63,7 +52,6 @@ YAY_TOOLS=(
   smbclient
   mssql-tools
   go-sqlcmd
-  
   smbmap
   hash-identifier-git
   enum4linux-git
@@ -71,18 +59,18 @@ YAY_TOOLS=(
 )
 
 # ========================
-# Instalar paquetes con pacman
+# Instalación rápida
 # ========================
-for tool in "${PACMAN_TOOLS[@]}"; do
-  instalar pacman "$tool"
-done
+echo "[*] Instalando herramientas de pacman..."
+sudo pacman -S --needed --noconfirm "${PACMAN_TOOLS[@]}"
+
+echo "[*] Instalando herramientas de yay (AUR)..."
+sudo -u "$SUDO_USER" yay -S --needed --noconfirm "${YAY_TOOLS[@]}"
 
 # ========================
-# Instalar paquetes con yay
+# Instalaciones especiales
 # ========================
-for tool in "${YAY_TOOLS[@]}"; do
-  instalar yay "$tool"
-done
+sudo pacman -S --needed --noconfirm python-pyasn1-modules --overwrite "/usr/lib/python3.13/site-packages/*"
+sudo -u "$SUDO_USER" yay -S --needed --noconfirm enum4linux-git
 
-sudo pacman -S python-pyasn1-modules --overwrite "/usr/lib/python3.13/site-packages/*"
-yay -S enum4linux-git
+echo "[✔] Instalación completada."
