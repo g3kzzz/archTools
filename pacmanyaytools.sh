@@ -42,6 +42,7 @@ PACMAN_TOOLS=(
   locate
   exiftool
   gnu-netcat
+  mysql
   wget
   freerdp2
   wireshark-qt
