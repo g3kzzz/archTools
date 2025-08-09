@@ -53,6 +53,7 @@ YAY_TOOLS=(
   openssh
   metasploit-git
   crowbar
+  proxychains-ng-git
   smbclient
   mssql-tools
   go-sqlcmd
