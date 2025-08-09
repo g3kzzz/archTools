@@ -31,6 +31,7 @@ PACMAN_TOOLS=(
   locate
   arp-scan
   exiftool
+  socat
   gnu-netcat
   mysql
   wget
