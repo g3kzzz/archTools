@@ -35,6 +35,7 @@ PACMAN_TOOLS=(
   gnu-netcat
   mysql
   wget
+  nfs-utils
   freerdp2
   wireshark-qt
 )
