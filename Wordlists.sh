@@ -49,19 +49,21 @@ clone_repo() {
 
 process_files() {
     local src_dir="$WORDLISTS_DIR"
-    local dest_dir="$USR_SHARE/extra_wordlists"
-    mkdir -p "$dest_dir"
 
     for file_name in "${FILES_TO_PROCESS[@]}"; do
         local src_file="$src_dir/$file_name"
-        
+
         if [[ -f "$src_file" ]]; then
             if [[ "$file_name" == *.zip ]]; then
+                local folder_name="${file_name%.zip}"
+                local dest_dir="$src_dir/$folder_name"
+                mkdir -p "$dest_dir"
                 echo "[+] Descomprimiendo $file_name en $dest_dir"
                 unzip -o "$src_file" -d "$dest_dir" >/dev/null
+                rm -f "$src_file"  # Eliminar el zip después
             else
-                echo "[+] Copiando $file_name a $dest_dir"
-                cp "$src_file" "$dest_dir/"
+                echo "[+] Manteniendo $file_name en $src_dir"
+                # Ya está en el lugar correcto, no se mueve
             fi
         else
             echo "[!] Archivo no encontrado: $src_file"
