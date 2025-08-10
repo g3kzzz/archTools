@@ -24,8 +24,8 @@ FILES_TO_PROCESS=(
     "wifite.txt"
 )
 
-# Carpeta donde está este script (origen de archivos)
-SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
+# Carpeta donde estarán los archivos después de clonar
+WORDLISTS_DIR="$USR_SHARE/wordlists"
 
 # =========================
 # FUNCIONES
@@ -49,11 +49,12 @@ clone_repo() {
 }
 
 process_files() {
+    local src_dir="$WORDLISTS_DIR"
     local dest_dir="$USR_SHARE/extra_wordlists"
     mkdir -p "$dest_dir"
 
     for file_name in "${FILES_TO_PROCESS[@]}"; do
-        local src_file="$SCRIPT_DIR/$file_name"
+        local src_file="$src_dir/$file_name"
         
         if [[ -f "$src_file" ]]; then
             if [[ "$file_name" == *.zip ]]; then
@@ -77,7 +78,7 @@ check_root
 
 echo "[*] Clonando repositorios..."
 clone_repo "$SECLISTS_REPO" "$USR_SHARE/SecLists"
-clone_repo "$WORDLISTS_REPO" "$USR_SHARE/wordlists"
+clone_repo "$WORDLISTS_REPO" "$WORDLISTS_DIR"
 
 echo "[*] Procesando archivos adicionales..."
 process_files
