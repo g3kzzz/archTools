@@ -24,6 +24,9 @@ FILES_TO_PROCESS=(
     "wifite.txt"
 )
 
+# Carpeta donde está este script (origen de archivos)
+SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
+
 # =========================
 # FUNCIONES
 # =========================
@@ -50,16 +53,19 @@ process_files() {
     mkdir -p "$dest_dir"
 
     for file_name in "${FILES_TO_PROCESS[@]}"; do
-        if [[ -f "$file_name" ]]; then
+        local src_file="$SCRIPT_DIR/$file_name"
+        
+        if [[ -f "$src_file" ]]; then
             if [[ "$file_name" == *.zip ]]; then
                 echo "[+] Descomprimiendo $file_name en $dest_dir"
-                unzip -o "$file_name" -d "$dest_dir" >/dev/null
+                unzip -o "$src_file" -d "$dest_dir" >/dev/null
+                rm -f "$src_file"  # Eliminar el zip después
             else
                 echo "[+] Copiando $file_name a $dest_dir"
-                cp "$file_name" "$dest_dir/"
+                cp "$src_file" "$dest_dir/"
             fi
         else
-            echo "[!] Archivo no encontrado: $file_name"
+            echo "[!] Archivo no encontrado: $src_file"
         fi
     done
 }
