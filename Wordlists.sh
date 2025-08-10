@@ -54,16 +54,21 @@ process_files() {
         local src_file="$src_dir/$file_name"
 
         if [[ -f "$src_file" ]]; then
-            if [[ "$file_name" == *.zip ]]; then
+            if [[ "$file_name" == "rockyou.txt.zip" ]]; then
+                # Caso especial: descomprimir directamente
+                echo "[+] Descomprimiendo $file_name en $src_dir"
+                unzip -o "$src_file" -d "$src_dir" >/dev/null
+                rm -f "$src_file"
+            elif [[ "$file_name" == *.zip ]]; then
+                # Carpeta normal
                 local folder_name="${file_name%.zip}"
                 local dest_dir="$src_dir/$folder_name"
                 mkdir -p "$dest_dir"
                 echo "[+] Descomprimiendo $file_name en $dest_dir"
                 unzip -o "$src_file" -d "$dest_dir" >/dev/null
-                rm -f "$src_file"  # Eliminar el zip después
+                rm -f "$src_file"
             else
                 echo "[+] Manteniendo $file_name en $src_dir"
-                # Ya está en el lugar correcto, no se mueve
             fi
         else
             echo "[!] Archivo no encontrado: $src_file"
@@ -84,3 +89,5 @@ echo "[*] Procesando archivos adicionales..."
 process_files
 
 echo "[+] Proceso completado."
+
+
