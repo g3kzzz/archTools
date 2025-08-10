@@ -24,7 +24,6 @@ FILES_TO_PROCESS=(
     "wifite.txt"
 )
 
-# Carpeta donde estarán los archivos después de clonar
 WORDLISTS_DIR="$USR_SHARE/wordlists"
 
 # =========================
@@ -60,7 +59,6 @@ process_files() {
             if [[ "$file_name" == *.zip ]]; then
                 echo "[+] Descomprimiendo $file_name en $dest_dir"
                 unzip -o "$src_file" -d "$dest_dir" >/dev/null
-                rm -f "$src_file"  # Eliminar el zip después
             else
                 echo "[+] Copiando $file_name a $dest_dir"
                 cp "$src_file" "$dest_dir/"
