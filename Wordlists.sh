@@ -1,42 +1,79 @@
 #!/bin/bash
 
-# =============================================================
-#     📦 Instalador de Herramientas - ToolsArch Edition
-# =============================================================
+# =========================
+# CONFIG
+# =========================
+USR_SHARE="/usr/share"
+SECLISTS_REPO="https://github.com/danielmiessler/SecLists.git"
+WORDLISTS_REPO="https://github.com/g333k/wordlists.git"
 
-REPO_URL="https://github.com/g333k/toolsarch.git"
-RUTA_TEMP="/tmp/toolsarch"
-DESTINO_BASE="/usr/share"
-CARPETAS=("wordlist" "nishang" "laudanum")
+FILES_TO_PROCESS=(
+    "amass.zip"
+    "dirb.zip"
+    "dirbuster.zip"
+    "dnsmap.txt"
+    "fasttrack.txt"
+    "fern-wifi.zip"
+    "john.lst"
+    "legion.zip"
+    "metasploit.zip"
+    "nmap.lst"
+    "rockyou.txt.zip"
+    "sqlmap.txt"
+    "wfuzz.zip"
+    "wifite.txt"
+)
 
-# Verificar permisos
-if [[ "$EUID" -ne 0 ]]; then
-    echo "❌ Este script debe ejecutarse como root."
-    echo "➡️ Usa: sudo $0"
-    exit 1
-fi
-
-# Clonar o actualizar repositorio
-if [[ -d "$RUTA_TEMP/.git" ]]; then
-    echo "🔄 Repositorio ya existe en /tmp. Actualizando..."
-    git -C "$RUTA_TEMP" pull
-else
-    echo "📥 Clonando repositorio toolsarch..."
-    git clone "$REPO_URL" "$RUTA_TEMP"
-fi
-
-# Mover carpetas seleccionadas
-for carpeta in "${CARPETAS[@]}"; do
-    ORIGEN="$RUTA_TEMP/$carpeta"
-    DESTINO="$DESTINO_BASE/$carpeta"
-
-    if [[ -d "$ORIGEN" ]]; then
-        echo "📂 Instalando '$carpeta' en /usr/share/..."
-        cp -r "$ORIGEN" "$DESTINO"
-        echo "✅ '$carpeta' instalada."
-    else
-        echo "⚠️ Carpeta '$carpeta' no encontrada en el repositorio. Saltando..."
+# =========================
+# FUNCIONES
+# =========================
+check_root() {
+    if [[ $EUID -ne 0 ]]; then
+        echo "[!] Este script debe ejecutarse como root."
+        exit 1
     fi
-done
+}
 
-echo "🎉 ¡Instalación completada!"
+clone_repo() {
+    local repo_url="$1"
+    local dest_dir="$2"
+    if [[ ! -d "$dest_dir" ]]; then
+        echo "[*] Clonando $repo_url en $dest_dir..."
+        git clone "$repo_url" "$dest_dir"
+    else
+        echo "[+] El repositorio $repo_url ya existe en $dest_dir"
+    fi
+}
+
+process_files() {
+    local dest_dir="$USR_SHARE/extra_wordlists"
+    mkdir -p "$dest_dir"
+
+    for file_name in "${FILES_TO_PROCESS[@]}"; do
+        if [[ -f "$file_name" ]]; then
+            if [[ "$file_name" == *.zip ]]; then
+                echo "[+] Descomprimiendo $file_name en $dest_dir"
+                unzip -o "$file_name" -d "$dest_dir" >/dev/null
+            else
+                echo "[+] Copiando $file_name a $dest_dir"
+                cp "$file_name" "$dest_dir/"
+            fi
+        else
+            echo "[!] Archivo no encontrado: $file_name"
+        fi
+    done
+}
+
+# =========================
+# MAIN
+# =========================
+check_root
+
+echo "[*] Clonando repositorios..."
+clone_repo "$SECLISTS_REPO" "$USR_SHARE/SecLists"
+clone_repo "$WORDLISTS_REPO" "$USR_SHARE/wordlists"
+
+echo "[*] Procesando archivos adicionales..."
+process_files
+
+echo "[+] Proceso completado."
