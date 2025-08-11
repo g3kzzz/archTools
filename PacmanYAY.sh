@@ -3,15 +3,16 @@
 # ========================
 # Verificación de privilegios
 # ========================
-if [[ $EUID -ne 0 ]]; then
-  echo "[!] Este script debe ejecutarse con sudo (como root)."
+if [[ $EUID -eq 0 && -z "$SUDO_USER" ]]; then
+  echo "[!] No ejecutes este script como root directamente."
+  echo "    Usa: sudo $0"
   exit 1
 fi
 
 # ========================
 # Autenticación sudo una sola vez
 # ========================
-echo "[*] Autenticando sudo (una sola vez)..."
+echo "[*] Autenticando sudo..."
 sudo -v
 
 # Mantener sudo vivo
@@ -20,101 +21,28 @@ SUDO_KEEPALIVE_PID=$!
 trap 'kill $SUDO_KEEPALIVE_PID' EXIT
 
 # ========================
-# Herramientas organizadas por enfoque
+# Listas de herramientas
 # ========================
+PACMAN_SCAN_TOOLS=(nmap-git arp-scan subfinder enum4linux-git smtp-user-enum-git)
+YAY_SCAN_TOOLS=(nmap-git subfinder enum4linux-git smtp-user-enum-git)
 
-# ----------------------------------------
-# Escaneo y reconocimiento
-# ----------------------------------------
-PACMAN_SCAN_TOOLS=(
-  nmap-git         # Escaneo de puertos y servicios
-  arp-scan         # Escaneo ARP en red local
-  subfinder        # Descubrimiento de subdominios
-  enum4linux-git   # Enumeración SMB/AD
-  smtp-user-enum-git  # Enumeración de usuarios SMTP
-)
+PACMAN_CRACK_TOOLS=()
+YAY_CRACK_TOOLS=(hashcat-git john-git hashcat-utils-git medusa hydra-git hash-identifier-git hashid)
 
-YAY_SCAN_TOOLS=(
-  nmap-git
-  subfinder
-  enum4linux-git
-  smtp-user-enum-git
-)
+PACMAN_EXPLOIT_TOOLS=(smbclient mssql-tools go-sqlcmd freerdp2 openssh)
+YAY_EXPLOIT_TOOLS=(ruby-evil-winrm metasploit-git crowbar proxychains-ng-git powershell)
 
-# ----------------------------------------
-# Cracking / Password attacks
-# ----------------------------------------
-PACMAN_CRACK_TOOLS=(
-  # (ninguna en pacman aquí)
-)
+PACMAN_NET_TOOLS=(wireshark-qt gnu-netcat socat)
+YAY_NET_TOOLS=(netexec)
 
-YAY_CRACK_TOOLS=(
-  hashcat-git       # Cracking de hashes con GPU
-  john-git          # John The Ripper, cracking de contraseñas
-  hashcat-utils-git # Utilidades para hashcat
-  medusa            # Fuerza bruta paralela
-  hydra-git         # Fuerza bruta multi-protocolo
-  hash-identifier-git # Identificador de hashes
-  hashid            # Identificador de hashes (alternativa)
-)
+YAY_FUZZ_TOOLS=(burpsuite)
 
-# ----------------------------------------
-# Explotación de servicios comunes
-# ----------------------------------------
-PACMAN_EXPLOIT_TOOLS=(
-  smbclient         # Cliente SMB
-  mssql-tools       # Herramientas para MSSQL
-  go-sqlcmd         # Herramienta para SQL Server
-  freerdp2          # Cliente RDP
-  openssh           # SSH client/server
-)
-
-YAY_EXPLOIT_TOOLS=(
-  ruby-evil-winrm  # Exploits y acceso WinRM (Windows Remoting)
-  metasploit-git   # Framework de explotación
-  crowbar          # Fuerza bruta en servicios comunes (SSH, RDP, SMB)
-  proxychains-ng-git # Proxy para redirigir tráfico (útil para pentesting)
-  powershell       # Shell para administración Windows y explotación
-)
-
-# ----------------------------------------
-# Análisis y sniffing de red
-# ----------------------------------------
-PACMAN_NET_TOOLS=(
-  wireshark-qt    # Análisis de tráfico de red
-  gnu-netcat      # Netcat para conexiones TCP/UDP
-  socat           # Multipropósito para conexiones de red
-)
-
-YAY_NET_TOOLS=(
-  netexec         # Ejecución remota de comandos (netexec)
-)
-
-# ----------------------------------------
-# Fuzzing y otras utilidades
-# ----------------------------------------
-YAY_FUZZ_TOOLS=(
-  burpsuite       # Proxy para pruebas de seguridad web (fuzzing y más)
-)
-
-# ----------------------------------------
-# Herramientas básicas y utilidades
-# ----------------------------------------
-PACMAN_UTILS=(
-  openvpn         # VPN
-  tree            # Visualización de directorios en árbol
-  locate          # Búsqueda rápida de archivos
-  exiftool        # Análisis de metadatos en archivos
-  wget            # Descarga de archivos
-  nfs-utils       # Utilidades para NFS
-)
+PACMAN_UTILS=(openvpn tree locate exiftool wget nfs-utils)
 
 # ========================
-# Instalación de paquetes
+# Instalación con pacman
 # ========================
-
 echo "[*] Instalando herramientas de pacman..."
-
 sudo pacman -S --needed --noconfirm \
   "${PACMAN_SCAN_TOOLS[@]}" \
   "${PACMAN_CRACK_TOOLS[@]}" \
@@ -122,20 +50,24 @@ sudo pacman -S --needed --noconfirm \
   "${PACMAN_NET_TOOLS[@]}" \
   "${PACMAN_UTILS[@]}"
 
-echo "[*] Instalando herramientas de yay (AUR)..."
-
-sudo -u "$SUDO_USER" yay -S --needed --noconfirm \
-  "${YAY_SCAN_TOOLS[@]}" \
-  "${YAY_CRACK_TOOLS[@]}" \
-  "${YAY_EXPLOIT_TOOLS[@]}" \
-  "${YAY_NET_TOOLS[@]}" \
-  "${YAY_FUZZ_TOOLS[@]}"
+# ========================
+# Instalación con yay (AUR)
+# ========================
+if [[ -n "$SUDO_USER" ]]; then
+  echo "[*] Instalando herramientas de yay (AUR)..."
+  sudo -u "$SUDO_USER" yay -S --needed --noconfirm \
+    "${YAY_SCAN_TOOLS[@]}" \
+    "${YAY_CRACK_TOOLS[@]}" \
+    "${YAY_EXPLOIT_TOOLS[@]}" \
+    "${YAY_NET_TOOLS[@]}" \
+    "${YAY_FUZZ_TOOLS[@]}"
+else
+  echo "[!] No se pudo instalar AUR porque no se detectó SUDO_USER."
+fi
 
 # ========================
 # Instalaciones especiales
 # ========================
-
 sudo pacman -S --needed --noconfirm python-pyasn1-modules --overwrite "/usr/lib/python3.13/site-packages/*"
-sudo -u "$SUDO_USER" yay -S --needed --noconfirm enum4linux-git
 
 echo "[✔] Instalación completada."
