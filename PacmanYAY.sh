@@ -36,7 +36,6 @@ PACMAN_SCAN_TOOLS=(
 
 YAY_SCAN_TOOLS=(
   nmap-git
-  arp-scan
   subfinder
   enum4linux-git
   smtp-user-enum-git
