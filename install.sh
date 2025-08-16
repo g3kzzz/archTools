@@ -82,14 +82,14 @@ fi
 # LISTAS DE HERRAMIENTAS
 # =============================
 PACMAN_TOOLS=(
-  arp-scan smbclient mssql-tools go-sqlcmd freerdp2 openssh
+  arp-scan smbclient freerdp2 openssh
   wireshark-qt gnu-netcat socat openvpn tree locate exiftool wget
   nfs-utils python-pyasn1-modules python-pip
 )
 
 YAY_TOOLS=(
   nmap-git whatweb subfinder enum4linux-git smtp-user-enum-git
-  hashcat-git responder
+  hashcat-git responder mssql-tools go-sqlcmd
 )
 
 # =============================
