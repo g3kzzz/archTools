@@ -2,7 +2,7 @@
 set -e
 
 # =============================
-#   G3K ArchPentest Installer
+#   G3K Installer
 # =============================
 
 # 📛 Debe correr como usuario normal
@@ -123,7 +123,7 @@ YAY_TOOLS=(
   john-git             # Cracking de contraseñas en CPU
   hashcat-utils-git    # Herramientas auxiliares Hashcat
   medusa               # Ataques de fuerza bruta
-  hydra-git            # Ataques de fuerza bruta contra servicios
+  hydra                # Ataques de fuerza bruta contra servicios
   hash-identifier-git  # Identifica tipo de hash
   hashid               # Identifica hashes rápidamente
   responder            # Captura hashes y tráfico NetBIOS
