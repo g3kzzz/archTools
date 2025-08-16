@@ -1,5 +1,4 @@
 #!/bin/bash
-set -e
 
 # =============================
 #   G3K ArchPentest Installer
@@ -20,10 +19,10 @@ instalar_pacman() {
     if pacman -Qi "$pkg" &>/dev/null; then
       echo "✅ CHECK $pkg INSTALADA"
     else
-      if pacman -S --needed --noconfirm "$pkg" &>/dev/null; then
+      if output=$(pacman -S --needed --noconfirm "$pkg" 2>&1); then
         echo "✅ CHECK $pkg INSTALADA"
       else
-        echo "❌ CRUZ $pkg NO SE PUDO INSTALAR: error pacman"
+        echo "❌ CRUZ $pkg NO SE PUDO INSTALAR: $output"
       fi
     fi
   done
@@ -34,10 +33,10 @@ instalar_yay() {
     if yay -Qi "$pkg" &>/dev/null; then
       echo "✅ CHECK $pkg INSTALADA"
     else
-      if yay -S --needed --noconfirm "$pkg" &>/dev/null; then
+      if output=$(yay -S --needed --noconfirm "$pkg" 2>&1); then
         echo "✅ CHECK $pkg INSTALADA"
       else
-        echo "❌ CRUZ $pkg NO SE PUDO INSTALAR: error yay"
+        echo "❌ CRUZ $pkg NO SE PUDO INSTALAR: $output"
       fi
     fi
   done
@@ -50,10 +49,10 @@ clone_repo() {
     rm -rf "$dir"
     echo "❗ Repo previo eliminado: $dir"
   fi
-  if git clone "$repo" "$dir" &>/dev/null; then
+  if output=$(git clone "$repo" "$dir" 2>&1); then
     echo "✅ CHECK $(basename $dir) INSTALADA"
   else
-    echo "❌ CRUZ $(basename $dir) NO SE PUDO INSTALAR: error git"
+    echo "❌ CRUZ $(basename $dir) NO SE PUDO INSTALAR: $output"
   fi
 }
 
@@ -69,11 +68,17 @@ rustup show &>/dev/null || rustup default stable &>/dev/null
 # =============================
 if ! command -v yay &>/dev/null; then
   cd /tmp
-  git clone https://aur.archlinux.org/yay.git &>/dev/null
-  cd yay
-  makepkg -si --noconfirm &>/dev/null
+  if git clone https://aur.archlinux.org/yay.git; then
+    cd yay
+    if makepkg -si --noconfirm; then
+      echo "✅ CHECK yay INSTALADA"
+    else
+      echo "❌ CRUZ yay NO SE PUDO INSTALAR: error makepkg"
+    fi
+  else
+    echo "❌ CRUZ yay NO SE PUDO INSTALAR: error git clone"
+  fi
   cd ~
-  echo "✅ CHECK yay INSTALADA"
 else
   echo "✅ CHECK yay INSTALADA"
 fi
@@ -103,10 +108,10 @@ instalar_yay "${YAY_TOOLS[@]}"
 # =============================
 # EVIL-WINRM FIX
 # =============================
-if gem install --user-install evil-winrm --no-document &>/dev/null; then
+if output=$(gem install --user-install evil-winrm --no-document 2>&1); then
   echo "✅ CHECK evil-winrm INSTALADA"
 else
-  echo "❌ CRUZ evil-winrm NO SE PUDO INSTALAR: error gem"
+  echo "❌ CRUZ evil-winrm NO SE PUDO INSTALAR: $output"
 fi
 
 GEM_PATH="$(ruby -e 'puts Gem.user_dir')/bin"
@@ -118,10 +123,10 @@ fi
 # =============================
 # RESPONDER FIX
 # =============================
-if pip install --break-system-packages aioquic dnspython impacket netifaces &>/dev/null; then
+if output=$(pip install --break-system-packages aioquic dnspython impacket netifaces 2>&1); then
   echo "✅ CHECK responder deps INSTALADAS"
 else
-  echo "❌ CRUZ responder deps NO SE PUDO INSTALAR: error pip"
+  echo "❌ CRUZ responder deps NO SE PUDO INSTALAR: $output"
 fi
 
 # =============================
@@ -149,14 +154,22 @@ for file in "${FILES_TO_PROCESS[@]}"; do
   src="$WORDLISTS_DIR/$file"
   if [[ -f "$src" ]]; then
     if [[ "$file" == "rockyou.txt.zip" ]]; then
-      unzip -o "$src" -d "$WORDLISTS_DIR" &>/dev/null && rm -f "$src"
-      echo "✅ CHECK rockyou INSTALADA"
+      if unzip -o "$src" -d "$WORDLISTS_DIR"; then
+        rm -f "$src"
+        echo "✅ CHECK rockyou INSTALADA"
+      else
+        echo "❌ CRUZ rockyou NO SE PUDO INSTALAR: error unzip"
+      fi
     elif [[ "$file" == *.zip ]]; then
       folder="${file%.zip}"
       rm -rf "$WORDLISTS_DIR/$folder"
       mkdir -p "$WORDLISTS_DIR/$folder"
-      unzip -o "$src" -d "$WORDLISTS_DIR/$folder" &>/dev/null && rm -f "$src"
-      echo "✅ CHECK $folder INSTALADA"
+      if unzip -o "$src" -d "$WORDLISTS_DIR/$folder"; then
+        rm -f "$src"
+        echo "✅ CHECK $folder INSTALADA"
+      else
+        echo "❌ CRUZ $folder NO SE PUDO INSTALAR: error unzip"
+      fi
     else
       echo "✅ CHECK $file INSTALADA"
     fi
