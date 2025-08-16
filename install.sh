@@ -134,7 +134,7 @@ YAY_TOOLS=(
   metasploit-git       # Framework de explotación
   crowbar              # Fuerza bruta a servicios de red
   proxychains-ng-git   # Redirige tráfico a través de proxies
-  powershell           # Automatización y post-explotación Windows
+  powershell-bin           # Automatización y post-explotación Windows
   netexec              # Ejecución remota de comandos
 
   #============ BASES DE DATOS ============
