@@ -115,7 +115,7 @@ YAY_TOOLS=(
   whatweb              # Detecta tecnologías de sitios web
   subfinder            # Descubre subdominios de un dominio
   enum4linux-git       # Enumera información de servidores Windows
-  smpt-user-enum-git   # Descubre usuarios válidos SMTP
+  smtp-user-enum-git   # Descubre usuarios válidos SMTP
   gobuster             # Descubre directorios y subdominios web
 
   #============ CRACKING Y ATAQUES ============
