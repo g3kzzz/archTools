@@ -79,22 +79,57 @@ else
 fi
 
 # =============================
-# LISTAS DE HERRAMIENTAS
+# INSTALACIÓN DE HERRAMIENTAS
 # =============================
+
 PACMAN_TOOLS=(
-  arp-scan smbclient freerdp2 openssh net-tools
-  wireshark-qt gnu-netcat socat openvpn tree locate exiftool wget
-  nfs-utils python-pyasn1-modules python-pip
+  #============ RECONOCIMIENTO DE RED Y HOSTS ============
+  arp-scan             # Escanea red para detectar hosts activos
+  net-tools            # Herramientas básicas de red Linux
+  locate               # Busca archivos rápidamente en sistema
+  tree                 # Muestra estructura de directorios jerárquica
+  net-snmp    # Gestión y monitoreo SNMP de dispositivos red
+
+
+  #============ ANÁLISIS Y MONITOREO DE TRÁFICO ============
+  wireshark-qt         # Analiza tráfico de red en detalle
+  gnu-netcat           # Conexiones TCP/UDP y transferencias simples
+  socat                # Redirige y enlaza conexiones de red
+
+  #============ ACCESO REMOTO Y VPN ============
+  openssh              # Conexión segura remota por SSH
+  freerdp2             # Conexión remota vía RDP a Windows
+  openvpn              # Cliente y servidor VPN seguro
+
+  #============ UTILIDADES VARIAS ============
+  exiftool             # Extrae metadatos de archivos multimedia
+  nfs-utils            # Utilidades para sistemas NFS
+  python-pyasn1-modules # Maneja ASN.1 en Python
+  python-pip           # Instalador de paquetes Python
+  wget                 # Descarga archivos desde internet
+  smbclient            # Cliente SMB/CIFS para compartir archivos
 )
 
 YAY_TOOLS=(
-  nmap-git whatweb subfinder enum4linux-git smtp-user-enum-git
-  hashcat-git responder mssql-tools go-sqlcmd
+  #============ RECONOCIMIENTO Y ENUMERACIÓN ============
+  nmap-git             # Escaneo de redes y puertos
+  whatweb              # Detecta tecnologías de sitios web
+  subfinder             # Descubre subdominios de un dominio
+  enum4linux-git       # Enumera información de servidores Windows
+  smtp-user-enum-git   # Descubre usuarios válidos SMTP
+  gobuster    # Descubre directorios y subdominios web
+
+  #============ CRACKING Y ATAQUES ============
+  hashcat-git          # Cracking de contraseñas usando GPU
+  responder             # Captura hashes y tráfico NetBIOS
+
+  #============ BASES DE DATOS ============
+  mssql-tools           # Herramientas para administrar bases MSSQL
+  go-sqlcmd             # Cliente SQL para ejecutar comandos
 )
 
-# =============================
-# INSTALACIÓN DE HERRAMIENTAS
-# =============================
+
+
 instalar_pacman "${PACMAN_TOOLS[@]}"
 instalar_yay "${YAY_TOOLS[@]}"
 
