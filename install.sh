@@ -129,6 +129,7 @@ YAY_TOOLS=(
   responder            # Captura hashes y tráfico NetBIOS
 
   #============ EXPLOTACIÓN / POST-EXPLOTACIÓN ============
+  exploitdb            #searchsploit
   ruby-evil-winrm      # Conexión remota a Windows vía WinRM
   metasploit-git       # Framework de explotación
   crowbar              # Fuerza bruta a servicios de red
@@ -190,21 +191,6 @@ pip install --break-system-packages aioquic dnspython impacket netifaces &>/dev/
   echo "✅ Dependencias responder instaladas" || \
   echo "❌ Error instalando dependencias responder"
 sudo pip install aioquic --break-system-packages &>/dev/null
-
-# =============================
-# EXPLOITDB
-# =============================
-echo "$SUDO_PASS" | sudo -S rm -rf /opt/exploitdb
-echo "$SUDO_PASS" | sudo -S rm -f /usr/local/bin/searchsploit
-
-# Clonar desde GitHub oficial
-if echo "$SUDO_PASS" | sudo -S git clone https://github.com/offensive-security/exploitdb.git /opt/exploitdb &>/dev/null; then
-  echo "$SUDO_PASS" | sudo -S ln -sf /opt/exploitdb/searchsploit /usr/local/bin/searchsploit
-  echo "✅ exploitdb instalada"
-else
-  echo "❌ Error instalando exploitdb"
-fi
-
 
 # =============================
 # WORDLISTS & SECLISTS
