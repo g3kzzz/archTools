@@ -82,7 +82,7 @@ fi
 # LISTAS DE HERRAMIENTAS
 # =============================
 PACMAN_TOOLS=(
-  arp-scan smbclient freerdp2 openssh
+  arp-scan smbclient freerdp2 openssh net-tools
   wireshark-qt gnu-netcat socat openvpn tree locate exiftool wget
   nfs-utils python-pyasn1-modules python-pip
 )
