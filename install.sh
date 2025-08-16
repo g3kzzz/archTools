@@ -88,8 +88,8 @@ PACMAN_TOOLS=(
   net-tools            # Herramientas básicas de red Linux
   locate               # Busca archivos rápidamente en sistema
   tree                 # Muestra estructura de directorios jerárquica
-  net-snmp    # Gestión y monitoreo SNMP de dispositivos red
-
+  net-snmp             # Gestión y monitoreo SNMP de dispositivos red
+  smbclient            # Cliente SMB/CIFS para compartir archivos
 
   #============ ANÁLISIS Y MONITOREO DE TRÁFICO ============
   wireshark-qt         # Analiza tráfico de red en detalle
@@ -107,27 +107,39 @@ PACMAN_TOOLS=(
   python-pyasn1-modules # Maneja ASN.1 en Python
   python-pip           # Instalador de paquetes Python
   wget                 # Descarga archivos desde internet
-  smbclient            # Cliente SMB/CIFS para compartir archivos
 )
 
 YAY_TOOLS=(
   #============ RECONOCIMIENTO Y ENUMERACIÓN ============
   nmap-git             # Escaneo de redes y puertos
   whatweb              # Detecta tecnologías de sitios web
-  subfinder             # Descubre subdominios de un dominio
+  subfinder            # Descubre subdominios de un dominio
   enum4linux-git       # Enumera información de servidores Windows
   smtp-user-enum-git   # Descubre usuarios válidos SMTP
-  gobuster    # Descubre directorios y subdominios web
+  gobuster             # Descubre directorios y subdominios web
 
   #============ CRACKING Y ATAQUES ============
   hashcat-git          # Cracking de contraseñas usando GPU
-  responder             # Captura hashes y tráfico NetBIOS
+  john-git             # Cracking de contraseñas en CPU
+  hashcat-utils-git    # Herramientas auxiliares Hashcat
+  medusa               # Ataques de fuerza bruta
+  hydra-git            # Ataques de fuerza bruta contra servicios
+  hash-identifier-git  # Identifica tipo de hash
+  hashid               # Identifica hashes rápidamente
+  responder            # Captura hashes y tráfico NetBIOS
+
+  #============ EXPLOTACIÓN / POST-EXPLOTACIÓN ============
+  ruby-evil-winrm      # Conexión remota a Windows vía WinRM
+  metasploit-git       # Framework de explotación
+  crowbar              # Fuerza bruta a servicios de red
+  proxychains-ng-git   # Redirige tráfico a través de proxies
+  powershell           # Automatización y post-explotación Windows
+  netexec              # Ejecución remota de comandos
 
   #============ BASES DE DATOS ============
-  mssql-tools           # Herramientas para administrar bases MSSQL
-  go-sqlcmd             # Cliente SQL para ejecutar comandos
+  mssql-tools          # Herramientas para administrar bases MSSQL
+  go-sqlcmd            # Cliente SQL para ejecutar comandos
 )
-
 
 
 instalar_pacman "${PACMAN_TOOLS[@]}"
