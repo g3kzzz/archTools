@@ -315,3 +315,14 @@ run_sudo /tools/windows/install_windows_tools.sh
 run_sudo /tools/linux/install_linux_tools.sh
 run_sudo rm /tools/windows/install_windows_tools.sh
 run_sudo rm /tools/linux/install_linux_tools.sh
+# =============================
+# CLONAR WEB & SHELLS
+# =============================
+
+# Si ya existe /tools, eliminarlo
+if [[ -d "/g3WEB" ]]; then
+    echo "[*] Eliminando /g3WEB existente..."
+    run_sudo rm -rf /g3WEB
+fi
+clone_repo "https://github.com/g333k/g3WEB" "/g3WEB"
+
