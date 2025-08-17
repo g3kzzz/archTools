@@ -90,6 +90,7 @@ PACMAN_TOOLS=(
   tree                 # Muestra estructura de directorios jerárquica
   net-snmp             # Gestión y monitoreo SNMP de dispositivos red
   smbclient            # Cliente SMB/CIFS para compartir archivos
+  whois
 
   #============ ANÁLISIS Y MONITOREO DE TRÁFICO ============
   wireshark-qt         # Analiza tráfico de red en detalle
