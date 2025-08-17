@@ -282,18 +282,23 @@ clone_repo "$WORDLISTS_REPO" "$WORDLISTS_DIR"
 # CLONAR TOOLS Y EXPORTAR PATH
 # =============================
 
-clone_repo "https://github.com/g333k/tools" "/"
+# Si ya existe /tools, eliminarlo
+if [[ -d "/tools" ]]; then
+    echo "[*] Eliminando /tools existente..."
+    run_sudo rm -rf /tools
+fi
 
+# Clonar repo en /tools
+clone_repo "https://github.com/g333k/tools" "/tools"
+
+# Agregar al PATH
 if ! grep -q '/tools/bin' "$HOME/.zshrc"; then
     echo "[*] Agregando /tools/bin al PATH en .zshrc..."
     echo 'export PATH=$PATH:/tools/bin' >> "$HOME/.zshrc"
 fi
-sudo /tools/windows/install_windows_tools.sh
-sudo /tools/linux/install_linux_tools.sh
-sudo rm /tools/windows/install_windows_tools.sh
-sudo rm /tools/linux/install_linux_tools.sh
-# =============================
-# FIN
-# =============================
-echo
-echo "🚀 Instalación completa. Powered by G3K"
+
+# Instalar y limpiar scripts auxiliares
+run_sudo /tools/windows/install_windows_tools.sh
+run_sudo /tools/linux/install_linux_tools.sh
+run_sudo rm /tools/windows/install_windows_tools.sh
+run_sudo rm /tools/linux/install_linux_tools.sh
