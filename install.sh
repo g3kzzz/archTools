@@ -91,6 +91,7 @@ PACMAN_TOOLS=(
   net-snmp             # Gestión y monitoreo SNMP de dispositivos red
   smbclient            # Cliente SMB/CIFS para compartir archivos
   whois
+  bind-tools
 
   #============ ANÁLISIS Y MONITOREO DE TRÁFICO ============
   wireshark-qt         # Analiza tráfico de red en detalle
