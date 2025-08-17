@@ -120,6 +120,7 @@ YAY_TOOLS=(
   smtp-user-enum-git   # Descubre usuarios válidos SMTP
   gobuster             # Descubre directorios y subdominios web
   python-dnsrecon
+  amass-bin
   #============ CRACKING Y ATAQUES ============
   hashcat-git          # Cracking de contraseñas usando GPU
   john-git             # Cracking de contraseñas en CPU
