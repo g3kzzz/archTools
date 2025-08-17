@@ -77,14 +77,14 @@ El instalador clona y organiza automáticamente:
 ```bash
 /usr/share/wordlists
 /usr/share/SecLists
-
+```
 🚀 Instalación
-
+```
 git clone https://github.com/g333k/archTools.git
 cd archTools
 chmod +x install.sh
 ./install.sh
-
+```
     ⚠️ Debes ejecutarlo como usuario normal (no root).
 
 🧩 Repositorios adicionales
