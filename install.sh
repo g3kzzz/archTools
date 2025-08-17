@@ -64,7 +64,7 @@ else
     cd /tmp
     curl -s -O https://blackarch.org/strap.sh
     run_sudo chmod +x strap.sh
-    run_sudo ./strap.sh 
+    run_sudo ./strap.sh
 fi
 
 echo "[*] Actualizando repositorios..."
