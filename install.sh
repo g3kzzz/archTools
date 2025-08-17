@@ -296,34 +296,34 @@ clone_repo "$WORDLISTS_REPO" "$WORDLISTS_DIR"
 # =============================
 
 # Si ya existe /tools, eliminarlo
-if [[ -d "/G3Tools" ]]; then
-    echo "[*] Eliminando /G3Tools existente..."
-    run_sudo rm -rf /tools
+if [[ -d "/g3tools" ]]; then
+    echo "[*] Eliminando /g3tools existente..."
+    run_sudo rm -rf /g3tools
 fi
 
 # Clonar repo en /tools
-clone_repo "https://github.com/g333k/G3Tools" "/G3Tools"
-run_sudo chown -R "$USER:$USER" /G3Tools
-run_sudo chmod -R 755 /G3Tools
+clone_repo "https://github.com/g333k/g3tools" "/g3tools"
+run_sudo chown -R "$USER:$USER" /g3tools
+run_sudo chmod -R 755 /g3tools
 # Agregar al PATH
-if ! grep -q '/tools/bin' "$HOME/.zshrc"; then
-    echo "[*] Agregando /G3Tools/bin al PATH en .zshrc..."
-    echo 'export PATH=$PATH:/tools/bin' >> "$HOME/.zshrc"
+if ! grep -q '/g3tools/bin' "$HOME/.zshrc"; then
+    echo "[*] Agregando /g3tools/bin al PATH en .zshrc..."
+    echo 'export PATH=$PATH:/g3tools/bin' >> "$HOME/.zshrc"
 fi
 
 # Instalar y limpiar scripts auxiliares
-run_sudo /G3Tools/windows/install_windows_tools.sh
-run_sudo /G3Tools/linux/install_linux_tools.sh
-run_sudo rm /G3Tools/windows/install_windows_tools.sh
-run_sudo rm /G3Tools/linux/install_linux_tools.sh
+run_sudo /g3tools/windows/install_windows_tools.sh
+run_sudo /g3tools/linux/install_linux_tools.sh
+run_sudo rm /g3tools/windows/install_windows_tools.sh
+run_sudo rm /g3tools/linux/install_linux_tools.sh
 # =============================
 # CLONAR WEB & SHELLS
 # =============================
 
 # Si ya existe /tools, eliminarlo
-if [[ -d "/g3WEB" ]]; then
-    echo "[*] Eliminando /g3WEB existente..."
-    run_sudo rm -rf /g3WEB
+if [[ -d "/g3web" ]]; then
+    echo "[*] Eliminando /g3web existente..."
+    run_sudo rm -rf /g3web
 fi
-clone_repo "https://github.com/g333k/g3WEB" "/g3WEB"
+clone_repo "https://github.com/g333k/g3web" "/g3web"
 
