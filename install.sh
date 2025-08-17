@@ -290,7 +290,8 @@ fi
 
 # Clonar repo en /tools
 clone_repo "https://github.com/g333k/tools" "/tools"
-
+run_sudo chown -R "$USER:$USER" /tools
+run_sudo chmod -R 755 /tools
 # Agregar al PATH
 if ! grep -q '/tools/bin' "$HOME/.zshrc"; then
     echo "[*] Agregando /tools/bin al PATH en .zshrc..."
@@ -300,5 +301,3 @@ fi
 # Instalar y limpiar scripts auxiliares
 run_sudo /tools/windows/install_windows_tools.sh
 run_sudo /tools/linux/install_linux_tools.sh
-run_sudo rm /tools/windows/install_windows_tools.sh
-run_sudo rm /tools/linux/install_linux_tools.sh
