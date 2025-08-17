@@ -55,9 +55,7 @@ instalar_yay() {
     fi
   done
 }
-# =============================
-# BLACKARCH REPO
-# =============================
+
 
 if grep -q "\[blackarch\]" /etc/pacman.conf; then
     echo "✅ El repositorio BlackArch ya está instalado."
@@ -66,17 +64,16 @@ else
     cd /tmp
     curl -s -O https://blackarch.org/strap.sh
     run_sudo chmod +x strap.sh
-    run_sudo ./strap.sh
+    run_sudo ./strap.sh 
 fi
 
 echo "[*] Actualizando repositorios..."
-run_sudo pacman -Syyu --noconfirm
+# Forzar actualización aunque existan conflictos
+run_sudo pacman -Syyu --noconfirm --overwrite '*'
 
 # Volver a home
 cd /home/$USER
 
-# Rust por defecto estable
-rustup show &>/dev/null || rustup default stable &>/dev/null
 
 # =============================
 # YAY INSTALL
