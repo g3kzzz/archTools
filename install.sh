@@ -281,12 +281,8 @@ clone_repo "$WORDLISTS_REPO" "$WORDLISTS_DIR"
 # =============================
 # CLONAR TOOLS Y EXPORTAR PATH
 # =============================
-if [[ ! -d "/tools" ]]; then
-    echo "[*] Creando directorio /tools..."
-    run_sudo mkdir -p /tools
-fi
 
-clone_repo "https://github.com/g333k/tools" "/tools"
+clone_repo "https://github.com/g333k/tools" "/"
 
 if ! grep -q '/tools/bin' "$HOME/.zshrc"; then
     echo "[*] Agregando /tools/bin al PATH en .zshrc..."
