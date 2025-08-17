@@ -104,6 +104,7 @@ PACMAN_TOOLS=(
   whois
   bind-tools
   finalrecon
+  ffuf
 
   #============ ANÁLISIS Y MONITOREO DE TRÁFICO ============
   wireshark-qt         # Analiza tráfico de red en detalle
