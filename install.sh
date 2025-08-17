@@ -281,15 +281,18 @@ sudo /tools/windows/install_windows_tools.sh
 sudo /tools/linux/install_linux_tools.sh
 sudo rm /tools/windows/install_windows_tools.sh
 sudo rm /tools/linux/install_linux_tools.sh
-# CLONAR
-clone_repo "https://github.com/g333k/tools" "/"
+# CLONAR# =============================
+# CLONAR TOOLS Y EXPORTAR PATH
+# =============================
+clone_repo "https://github.com/g333k/tools" "/tools"
+
 if ! grep -q 'export PATH=.*\/tools\/bin' "$HOME/.zshrc"; then
     echo "[*] Agregando /tools/bin al PATH en .zshrc..."
     echo 'export PATH=$PATH:/tools/bin' >> "$HOME/.zshrc"
 fi
+
 # =============================
 # FIN
 # =============================
 echo
 echo "🚀 Instalación completa. Powered by G3K"
-
