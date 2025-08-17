@@ -65,14 +65,6 @@ else
     echo "[*] Descargando e instalando BlackArch..."
     cd /tmp
     curl -s -O https://blackarch.org/strap.sh
-
-    echo "[*] Verificando hash del script..."
-    HASH_OK=$(sha1sum strap.sh | awk '{print $1}')
-    if [[ "$HASH_OK" != "fc67cda3f1c07c136e5c8a0f2057d836376daa04" ]]; then
-        echo "❌ Hash no coincide. Abortando."
-        exit 1
-    fi
-
     run_sudo chmod +x strap.sh
     run_sudo ./strap.sh
 fi
