@@ -54,12 +54,33 @@ instalar_yay() {
       fi
     fi
   done
-}
+}# =============================
+# BLACKARCH REPO
+# =============================
 
-# =============================
-# DEPENDENCIAS BASE
-# =============================
-instalar_pacman git base-devel unzip wget curl ruby rustup python-pip
+if grep -q "\[blackarch\]" /etc/pacman.conf; then
+    echo "✅ El repositorio BlackArch ya está instalado."
+else
+    echo "[*] Descargando e instalando BlackArch..."
+    cd /tmp
+    curl -s -O https://blackarch.org/strap.sh
+
+    echo "[*] Verificando hash del script..."
+    HASH_OK=$(sha1sum strap.sh | awk '{print $1}')
+    if [[ "$HASH_OK" != "fc67cda3f1c07c136e5c8a0f2057d836376daa04" ]]; then
+        echo "❌ Hash no coincide. Abortando."
+        exit 1
+    fi
+
+    run_sudo chmod +x strap.sh
+    run_sudo ./strap.sh
+fi
+
+echo "[*] Actualizando repositorios..."
+run_sudo pacman -Syyu --noconfirm
+
+# Volver a home
+cd /home/$USER
 
 # Rust por defecto estable
 rustup show &>/dev/null || rustup default stable &>/dev/null
@@ -92,6 +113,7 @@ PACMAN_TOOLS=(
   smbclient            # Cliente SMB/CIFS para compartir archivos
   whois
   bind-tools
+  finalrecon
 
   #============ ANÁLISIS Y MONITOREO DE TRÁFICO ============
   wireshark-qt         # Analiza tráfico de red en detalle
@@ -301,3 +323,5 @@ fi
 # Instalar y limpiar scripts auxiliares
 run_sudo /tools/windows/install_windows_tools.sh
 run_sudo /tools/linux/install_linux_tools.sh
+run_sudo rm /tools/windows/install_windows_tools.sh
+run_sudo rm /tools/linux/install_linux_tools.sh
