@@ -152,6 +152,7 @@ YAY_TOOLS=(
   proxychains-ng-git   # Redirige tráfico a través de proxies
   powershell-bin           # Automatización y post-explotación Windows
   netexec              # Ejecución remota de comandos
+  libreoffice-fresh
 
   #============ BASES DE DATOS ============
   mssql-tools          # Herramientas para administrar bases MSSQL
