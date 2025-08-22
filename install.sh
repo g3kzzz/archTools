@@ -114,7 +114,7 @@ PACMAN_TOOLS=(
   bind-tools
   finalrecon
   ffuf
-  hashcat hashcat-utils subfinder gobuster-enum4linux dnsrecon amap medusa hydra hash-identifier hashid responder evil-winrm metasploit crackmapexec netexec crowbar
+  hashcat hashcat-utils subfinder gobuster enum4linux dnsrecon amap medusa hydra hash-identifier hashid responder evil-winrm metasploit crackmapexec netexec crowbar
   #============ ANÁLISIS Y MONITOREO DE TRÁFICO ============
   wireshark-qt         # Analiza tráfico de red en detalle
   gnu-netcat           # Conexiones TCP/UDP y transferencias simples
