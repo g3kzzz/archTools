@@ -114,7 +114,7 @@ PACMAN_TOOLS=(
   bind-tools
   finalrecon
   ffuf
-
+  hashcat hashcat-utils subfinder gobuster-enum4linux dnsrecon amap medusa hydra hash-identifier hashid responder evil-winrm metasploit crackmapexec netexec crowbar
   #============ ANÁLISIS Y MONITOREO DE TRÁFICO ============
   wireshark-qt         # Analiza tráfico de red en detalle
   gnu-netcat           # Conexiones TCP/UDP y transferencias simples
@@ -130,36 +130,21 @@ PACMAN_TOOLS=(
   nfs-utils            # Utilidades para sistemas NFS
   python-pyasn1-modules # Maneja ASN.1 en Python
   python-pip           # Instalador de paquetes Python
+  exploitdb
   wget                 # Descarga archivos desde internet
-)
+) 
 
 YAY_TOOLS=(
   #============ RECONOCIMIENTO Y ENUMERACIÓN ============
   nmap-git             # Escaneo de redes y puertos
   whatweb              # Detecta tecnologías de sitios web
-  subfinder            # Descubre subdominios de un dominio
-  enum4linux-git       # Enumera información de servidores Windows
   smtp-user-enum-git   # Descubre usuarios válidos SMTP
-  gobuster             # Descubre directorios y subdominios web
-  python-dnsrecon
-  amass-bin
-  #============ CRACKING Y ATAQUES ============
-  hashcat-git          # Cracking de contraseñas usando GPU
-  hashcat-utils-git    # Herramientas auxiliares Hashcat
-  medusa               # Ataques de fuerza bruta
-  hydra                # Ataques de fuerza bruta contra servicios
-  hash-identifier-git  # Identifica tipo de hash
-  hashid               # Identifica hashes rápidamente
-  responder            # Captura hashes y tráfico NetBIOS
-
+  
   #============ EXPLOTACIÓN / POST-EXPLOTACIÓN ============
   exploitdb            #searchsploit
-  ruby-evil-winrm      # Conexión remota a Windows vía WinRM
-  metasploit-git       # Framework de explotación
-  crowbar              # Fuerza bruta a servicios de red
+
   proxychains-ng-git   # Redirige tráfico a través de proxies
   powershell-bin           # Automatización y post-explotación Windows
-  netexec              # Ejecución remota de comandos
   libreoffice-fresh
 
   #============ BASES DE DATOS ============
