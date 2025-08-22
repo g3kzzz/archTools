@@ -114,7 +114,7 @@ PACMAN_TOOLS=(
   bind-tools
   finalrecon
   ffuf
-  hashcat hashcat-utils subfinder gobuster enum4linux dnsrecon amap medusa hydra hash-identifier hashid responder evil-winrm metasploit crackmapexec netexec crowbar
+  hashcat hashcat-utils subfinder gobuster enum4linux dnsrecon amap medusa hydra hash-identifier hashid responder metasploit crackmapexec netexec crowbar
   #============ ANÁLISIS Y MONITOREO DE TRÁFICO ============
   wireshark-qt         # Analiza tráfico de red en detalle
   gnu-netcat           # Conexiones TCP/UDP y transferencias simples
@@ -139,9 +139,7 @@ YAY_TOOLS=(
   nmap-git             # Escaneo de redes y puertos
   whatweb              # Detecta tecnologías de sitios web
   smtp-user-enum-git   # Descubre usuarios válidos SMTP
-  
-  #============ EXPLOTACIÓN / POST-EXPLOTACIÓN ============
-  exploitdb            #searchsploit
+  ruby-evil-winrm  
 
   proxychains-ng-git   # Redirige tráfico a través de proxies
   powershell-bin           # Automatización y post-explotación Windows
