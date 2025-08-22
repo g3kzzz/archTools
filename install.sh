@@ -124,7 +124,7 @@ PACMAN_TOOLS=(
   openssh              # Conexión segura remota por SSH
   freerdp2             # Conexión remota vía RDP a Windows
   openvpn              # Cliente y servidor VPN seguro
-
+  john
   #============ UTILIDADES VARIAS ============
   exiftool             # Extrae metadatos de archivos multimedia
   nfs-utils            # Utilidades para sistemas NFS
@@ -145,7 +145,6 @@ YAY_TOOLS=(
   amass-bin
   #============ CRACKING Y ATAQUES ============
   hashcat-git          # Cracking de contraseñas usando GPU
-  john-git             # Cracking de contraseñas en CPU
   hashcat-utils-git    # Herramientas auxiliares Hashcat
   medusa               # Ataques de fuerza bruta
   hydra                # Ataques de fuerza bruta contra servicios
