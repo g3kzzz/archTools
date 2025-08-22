@@ -27,7 +27,30 @@ run_sudo() {
 # =============================
 # FUNCIONES AUXILIARES
 # =============================
+instalar_blackarch() {
+    if grep -q "\[blackarch\]" /etc/pacman.conf; then
+        echo "✅ El repositorio BlackArch ya está instalado."
+    else
+        echo "[*] Descargando e instalando BlackArch..."
+        cd /tmp || return
+        curl -s -O https://blackarch.org/strap.sh
+        run_sudo chmod +x strap.sh &>/dev/null
+        if run_sudo ./strap.sh &>/dev/null; then
+            echo "✅ BlackArch instalado correctamente"
+        else
+            echo "❌ Error instalando BlackArch"
+            return 1
+        fi
+    fi
 
+    echo "[*] Actualizando repositorios..."
+    if run_sudo pacman -Syyu --noconfirm --overwrite '*' &>/dev/null; then
+        echo "✅ Repositorios BlackArch actualizados"
+    else
+        echo "❌ Error actualizando repositorios BlackArch"
+        return 1
+    fi
+}
 instalar_pacman() {
   for pkg in "$@"; do
     if pacman -Qi "$pkg" &>/dev/null; then
@@ -56,21 +79,7 @@ instalar_yay() {
   done
 }
 
-
-if grep -q "\[blackarch\]" /etc/pacman.conf; then
-    echo "✅ El repositorio BlackArch ya está instalado."
-else
-    echo "[*] Descargando e instalando BlackArch..."
-    cd /tmp
-    curl -s -O https://blackarch.org/strap.sh
-    run_sudo chmod +x strap.sh
-    run_sudo ./strap.sh
-fi
-
-echo "[*] Actualizando repositorios..."
-# Forzar actualización aunque existan conflictos
-run_sudo pacman -Syyu --noconfirm --overwrite '*'
-
+instalar_blackarch
 # Volver a home
 cd /home/$USER
 
