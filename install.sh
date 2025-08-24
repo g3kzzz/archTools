@@ -178,7 +178,15 @@ if gem install --user-install evil-winrm --no-document &>/dev/null; then
 else
   echo "❌ No se pudo instalar evil-winrm"
 fi
-
+# =============================
+# EXTRA GEMS
+# =============================
+echo "[*] Instalando gem csv..."
+if gem install --user-install csv --no-document &>/dev/null; then
+  echo "✅ gem csv instalada"
+else
+  echo "❌ No se pudo instalar gem csv"
+fi
 # =============================
 # FIX PATH GEM
 # =============================
