@@ -140,7 +140,7 @@ YAY_TOOLS=(
   whatweb              # Detecta tecnologías de sitios web
   smtp-user-enum-git   # Descubre usuarios válidos SMTP
   ruby-evil-winrm  
-
+  burpsuite
   proxychains-ng-git   # Redirige tráfico a través de proxies
   powershell-bin           # Automatización y post-explotación Windows
   libreoffice-fresh
