@@ -15,28 +15,25 @@ fi
 # =============================
 # PASSWORD HANDLING
 # =============================
-echo -n "🔑 Ingresa tu contraseña de sudo: "
-read -s SUDO_PASS
-echo
+# =============================
+# PASSWORD HANDLING
+# =============================
+while true; do
+    echo -n "🔑 Ingresa tu contraseña de sudo: "
+    read -s SUDO_PASS
+    echo
+    # Validar contraseña
+    if echo "$SUDO_PASS" | sudo -S -v &>/dev/null; then
+        echo "✅ Contraseña correcta"
+        break
+    else
+        echo "❌ Contraseña incorrecta, intenta de nuevo."
+    fi
+done
 
 # Función sudo personalizada
-# Función sudo personalizada con reintento
 run_sudo() {
-    local retries=3
-    local count=0
-    while true; do
-        if echo "$SUDO_PASS" | sudo -S "$@"; then
-            break
-        else
-            ((count++))
-            if [[ $count -ge $retries ]]; then
-                echo "❌ Contraseña incorrecta. Se alcanzó el número máximo de intentos."
-                exit 1
-            fi
-            echo "❌ Contraseña incorrecta. Intenta de nuevo:"
-            read -s SUDO_PASS
-        fi
-    done
+    echo "$SUDO_PASS" | sudo -S "$@"
 }
 
 # =============================
