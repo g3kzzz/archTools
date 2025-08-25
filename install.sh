@@ -20,8 +20,23 @@ read -s SUDO_PASS
 echo
 
 # Función sudo personalizada
+# Función sudo personalizada con reintento
 run_sudo() {
-  echo "$SUDO_PASS" | sudo -S "$@"
+    local retries=3
+    local count=0
+    while true; do
+        if echo "$SUDO_PASS" | sudo -S "$@"; then
+            break
+        else
+            ((count++))
+            if [[ $count -ge $retries ]]; then
+                echo "❌ Contraseña incorrecta. Se alcanzó el número máximo de intentos."
+                exit 1
+            fi
+            echo "❌ Contraseña incorrecta. Intenta de nuevo:"
+            read -s SUDO_PASS
+        fi
+    done
 }
 
 # =============================
