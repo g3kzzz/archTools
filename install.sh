@@ -215,7 +215,7 @@ fi
 # FIX RESPONDER (PIP DEPS)
 # =============================
 pip install --break-system-packages --upgrade pip
-pip install --break-system-packages aioquic tldextract dnspython impacket netifaces &>/dev/null && \
+pip install --break-system-packages aioquic tldextract bloodhound python-ldap dnspython impacket netifaces &>/dev/null && \
   echo "✅ Dependencias responder instaladas" || \
   echo "❌ Error instalando dependencias responder"
 sudo pip install aioquic --break-system-packages &>/dev/null
