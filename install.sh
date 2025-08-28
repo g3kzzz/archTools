@@ -303,6 +303,7 @@ process_files() {
 
 clone_repo "$SECLISTS_REPO" "$USR_SHARE/SecLists"
 clone_repo "$WORDLISTS_REPO" "$WORDLISTS_DIR"
+process_files
 
 # =============================
 # CLONAR TOOLS Y EXPORTAR PATH
