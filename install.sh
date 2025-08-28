@@ -271,7 +271,6 @@ clone_repo() {
         echo "[+] El repositorio $repo_url ya existe en $dest_dir"
     fi
 }
-
 process_files() {
     local src_dir="$WORDLISTS_DIR"
 
@@ -280,18 +279,16 @@ process_files() {
 
         if [[ -f "$src_file" ]]; then
             if [[ "$file_name" == "rockyou.txt.zip" ]]; then
-                # Caso especial: descomprimir directamente
                 echo "[+] Descomprimiendo $file_name en $src_dir"
-                unzip -o "$src_file" -d "$src_dir" >/dev/null
-                rm -f "$src_file"
+                run_sudo unzip -o "$src_file" -d "$src_dir" >/dev/null
+                run_sudo rm -f "$src_file"
             elif [[ "$file_name" == *.zip ]]; then
-                # Carpeta normal
                 local folder_name="${file_name%.zip}"
                 local dest_dir="$src_dir/$folder_name"
-                mkdir -p "$dest_dir"
+                run_sudo mkdir -p "$dest_dir"
                 echo "[+] Descomprimiendo $file_name en $dest_dir"
-                unzip -o "$src_file" -d "$dest_dir" >/dev/null
-                rm -f "$src_file"
+                run_sudo unzip -o "$src_file" -d "$dest_dir" >/dev/null
+                run_sudo rm -f "$src_file"
             else
                 echo "[+] Manteniendo $file_name en $src_dir"
             fi
@@ -300,6 +297,7 @@ process_files() {
         fi
     done
 }
+
 
 clone_repo "$SECLISTS_REPO" "$USR_SHARE/SecLists"
 clone_repo "$WORDLISTS_REPO" "$WORDLISTS_DIR"
