@@ -144,6 +144,7 @@ PACMAN_TOOLS=(
   python-pip           # Instalador de paquetes Python
   exploitdb
   wget                 # Descarga archivos desde internet
+  smbmap
 ) 
 
 YAY_TOOLS=(
