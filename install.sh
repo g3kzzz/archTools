@@ -5,96 +5,91 @@ set -e
 #   G3K Installer
 # =============================
 
-# 📛 Debe correr como usuario normal
+# 📛 Must NOT run directly as root
 if [[ $EUID -eq 0 ]]; then
-  echo "❌ No ejecutes este script directamente como root."
-  echo "✅ Ejecútalo como usuario normal."
+  echo "❌ Do not run this script directly as root."
+  echo "✅ Run it as a normal user."
   exit 1
 fi
 
 # =============================
 # PASSWORD HANDLING
 # =============================
-# =============================
-# PASSWORD HANDLING
-# =============================
 while true; do
-    echo -n "🔑 Ingresa tu contraseña de sudo: "
+    echo -n "🔑 Enter your sudo password: "
     read -s SUDO_PASS
     echo
-    # Validar contraseña
+    # Validate password
     if echo "$SUDO_PASS" | sudo -S -v &>/dev/null; then
-        echo "✅ Contraseña correcta"
+        echo "✅ Password accepted"
         break
     else
-        echo "❌ Contraseña incorrecta, intenta de nuevo."
+        echo "❌ Wrong password, try again."
     fi
 done
 
-# Función sudo personalizada
+# Custom sudo function
 run_sudo() {
     echo "$SUDO_PASS" | sudo -S "$@"
 }
 
 # =============================
-# FUNCIONES AUXILIARES
+# AUXILIARY FUNCTIONS
 # =============================
-instalar_blackarch() {
+install_blackarch() {
     if grep -q "\[blackarch\]" /etc/pacman.conf; then
-        echo "✅ El repositorio BlackArch ya está instalado."
+        echo "✅ BlackArch repo already installed."
     else
-        echo "[*] Descargando e instalando BlackArch..."
+        echo "[*] Downloading and installing BlackArch..."
         cd /tmp || return
         curl -s -O https://blackarch.org/strap.sh
         run_sudo chmod +x strap.sh &>/dev/null
         if run_sudo ./strap.sh &>/dev/null; then
-            echo "✅ BlackArch instalado correctamente"
+            echo "✅ BlackArch successfully installed"
         else
-            echo "❌ Error instalando BlackArch"
+            echo "❌ Error installing BlackArch"
             return 1
         fi
     fi
 
-    echo "[*] Actualizando repositorios..."
+    echo "[*] Updating repositories..."
     if run_sudo pacman -Syyu --noconfirm --overwrite '*' &>/dev/null; then
-        echo "✅ Repositorios BlackArch actualizados"
+        echo "✅ BlackArch repositories updated"
     else
-        echo "❌ Error actualizando repositorios BlackArch"
+        echo "❌ Error updating BlackArch repos"
         return 1
     fi
 }
-instalar_pacman() {
+install_pacman() {
   for pkg in "$@"; do
     if pacman -Qi "$pkg" &>/dev/null; then
-      echo "✅ $pkg ya instalada"
+      echo "✅ $pkg already installed"
     else
       if echo "$SUDO_PASS" | sudo -S pacman -S --needed --noconfirm "$pkg" &>/dev/null; then
-        echo "✅ $pkg instalada"
+        echo "✅ $pkg installed"
       else
-        echo "❌ No se pudo instalar $pkg con pacman"
+        echo "❌ Could not install $pkg with pacman"
       fi
     fi
   done
 }
 
-instalar_yay() {
+install_yay() {
   for pkg in "$@"; do
     if yay -Qi "$pkg" &>/dev/null; then
-      echo "✅ $pkg ya instalada"
+      echo "✅ $pkg already installed"
     else
       if yay -S --needed --noconfirm "$pkg" &>/dev/null; then
-        echo "✅ $pkg instalada"
+        echo "✅ $pkg installed"
       else
-        echo "❌ No se pudo instalar $pkg con yay"
+        echo "❌ Could not install $pkg with yay"
       fi
     fi
   done
 }
 
-instalar_blackarch
-# Volver a home
+install_blackarch
 cd /home/$USER
-
 
 # =============================
 # YAY INSTALL
@@ -105,237 +100,150 @@ if ! command -v yay &>/dev/null; then
   cd yay
   makepkg -si --noconfirm <<<"$SUDO_PASS" &>/dev/null
   cd ~
-  echo "✅ yay instalada"
+  echo "✅ yay installed"
 else
-  echo "✅ yay ya instalada"
+  echo "✅ yay already installed"
 fi
 
 # =============================
-# INSTALACIÓN DE HERRAMIENTAS
+# TOOLS INSTALLATION
 # =============================
 
-PACMAN_TOOLS=(
-  #============ RECONOCIMIENTO DE RED Y HOSTS ============
-  arp-scan             # Escanea red para detectar hosts activos
-  net-tools            # Herramientas básicas de red Linux
-  locate               # Busca archivos rápidamente en sistema
-  tree                 # Muestra estructura de directorios jerárquica
-  net-snmp             # Gestión y monitoreo SNMP de dispositivos red
-  smbclient            # Cliente SMB/CIFS para compartir archivos
-  whois
-  bind-tools
-  finalrecon
-  ffuf
-  hashcat hashcat-utils subfinder gobuster enum4linux dnsrecon amap medusa hydra hash-identifier hashid responder metasploit crackmapexec netexec crowbar
-  #============ ANÁLISIS Y MONITOREO DE TRÁFICO ============
-  wireshark-qt         # Analiza tráfico de red en detalle
-  gnu-netcat           # Conexiones TCP/UDP y transferencias simples
-  socat                # Redirige y enlaza conexiones de red
+PACMAN_TOOLS=( arp-scan net-tools locate tree net-snmp smbclient whois bind-tools finalrecon ffuf hashcat hashcat-utils subfinder gobuster enum4linux dnsrecon amap medusa hydra hash-identifier hashid responder metasploit crackmapexec netexec crowbar wireshark-qt gnu-netcat socat openssh freerdp2 openvpn john exiftool nfs-utils python-pyasn1-modules python-pip exploitdb wget smbmap ) 
 
-  #============ ACCESO REMOTO Y VPN ============
-  openssh              # Conexión segura remota por SSH
-  freerdp2             # Conexión remota vía RDP a Windows
-  openvpn              # Cliente y servidor VPN seguro
-  john
-  #============ UTILIDADES VARIAS ============
-  exiftool             # Extrae metadatos de archivos multimedia
-  nfs-utils            # Utilidades para sistemas NFS
-  python-pyasn1-modules # Maneja ASN.1 en Python
-  python-pip           # Instalador de paquetes Python
-  exploitdb
-  wget                 # Descarga archivos desde internet
-  smbmap
-) 
+YAY_TOOLS=( nmap-git whatweb smtp-user-enum-git ruby-evil-winrm burpsuite proxychains-ng-git powershell-bin libreoffice-fresh mssql-tools go-sqlcmd )
 
-YAY_TOOLS=(
-  #============ RECONOCIMIENTO Y ENUMERACIÓN ============
-  nmap-git             # Escaneo de redes y puertos
-  whatweb              # Detecta tecnologías de sitios web
-  smtp-user-enum-git   # Descubre usuarios válidos SMTP
-  ruby-evil-winrm  
-  burpsuite
-  proxychains-ng-git   # Redirige tráfico a través de proxies
-  powershell-bin           # Automatización y post-explotación Windows
-  libreoffice-fresh
-
-  #============ BASES DE DATOS ============
-  mssql-tools          # Herramientas para administrar bases MSSQL
-  go-sqlcmd            # Cliente SQL para ejecutar comandos
-)
-
-
-instalar_pacman "${PACMAN_TOOLS[@]}"
-instalar_yay "${YAY_TOOLS[@]}"
+install_pacman "${PACMAN_TOOLS[@]}"
+install_yay "${YAY_TOOLS[@]}"
 
 # =============================
-# FIX RUBY (WHATWEB + EVIL-WINRM)
+# RUBY FIXES (WHATWEB + EVIL-WINRM)
 # =============================
-echo "[+] Verificando librerías Ruby faltantes..."
+echo "[+] Checking missing Ruby libraries..."
 OUT=$(whatweb --version 2>&1 || true)
 while echo "$OUT" | grep -q "cannot load such file --"; do
   MISSING=$(echo "$OUT" | grep "cannot load such file --" | sed -E "s/.*-- ([a-zA-Z0-9_\-]+).*/\1/" | head -n 1)
-  echo "[!] Instalando gem Ruby faltante: $MISSING"
+  echo "[!] Installing missing Ruby gem: $MISSING"
   gem install --user-install "$MISSING" --no-document &>/dev/null
   OUT=$(whatweb --version 2>&1 || true)
 done
 OUT=$(evil-winrm 2>&1 || true)
 while echo "$OUT" | grep -q "cannot load such file --"; do
     MISSING=$(echo "$OUT" | grep "cannot load such file --" | sed -E "s/.*-- ([a-zA-Z0-9_\-]+).*/\1/" | head -n 1)
-    echo "[!] Inst. dependiente: $MISSING"
+    echo "[!] Installing dependency: $MISSING"
     gem install --user-install "$MISSING" --no-document &>/dev/null
     OUT=$(evil-winrm 2>&1 || true)
 done
 
-if gem install --user-install evil-winrm --no-document &>/dev/null; then
-  echo "✅ evil-winrm instalada"
-else
-  echo "❌ No se pudo instalar evil-winrm"
-fi
-# =============================
-# EXTRA GEMS
-# =============================
-echo "[*] Instalando gem csv..."
-if gem install --user-install csv --no-document &>/dev/null; then
-  echo "✅ gem csv instalada"
-else
-  echo "❌ No se pudo instalar gem csv"
-fi
-# =============================
-# FIX PATH GEM
-# =============================
+gem install --user-install evil-winrm --no-document &>/dev/null && echo "✅ evil-winrm installed"
+
+# Extra gems
+gem install --user-install csv --no-document &>/dev/null && echo "✅ gem csv installed"
+
+# Add GEM bin path
 GEM_PATH="$(ruby -e 'puts Gem.user_dir')/bin"
 if ! echo "$PATH" | grep -q "$GEM_PATH"; then
-  echo "[+] Añadiendo $GEM_PATH al PATH"
+  echo "[+] Adding $GEM_PATH to PATH"
   echo "export PATH=\"$GEM_PATH:\$PATH\"" >> ~/.zshrc
   echo "export PATH=\"$GEM_PATH:\$PATH\"" >> ~/.bashrc
   export PATH="$GEM_PATH:$PATH"
 fi
 
-
 # =============================
-# FIX RESPONDER (PIP DEPS)
+# RESPONDER FIX (PIP DEPS)
 # =============================
 pip install --break-system-packages --upgrade pip
 pip install --break-system-packages aioquic tldextract bloodhound python-ldap dnspython impacket netifaces &>/dev/null && \
-  echo "✅ Dependencias responder instaladas" || \
-  echo "❌ Error instalando dependencias responder"
+  echo "✅ responder dependencies installed"
 sudo pip install aioquic --break-system-packages &>/dev/null
 
 # =============================
 # WORDLISTS & SECLISTS
 # =============================
-
-
-# =========================
-# CONFIG
-# =========================
 USR_SHARE="/usr/share"
 SECLISTS_REPO="https://github.com/danielmiessler/SecLists.git"
 WORDLISTS_REPO="https://github.com/g333k/wordlists.git"
-
-FILES_TO_PROCESS=(
-    "amass.zip"
-    "dirb.zip"
-    "dirbuster.zip"
-    "dnsmap.txt"
-    "fasttrack.txt"
-    "fern-wifi.zip"
-    "john.lst"
-    "legion.zip"
-    "metasploit.zip"
-    "nmap.lst"
-    "rockyou.txt.zip"
-    "sqlmap.txt"
-    "wfuzz.zip"
-    "wifite.txt"
-)
-
 WORDLISTS_DIR="$USR_SHARE/wordlists"
 
-# =========================
-# FUNCIONES
-# =========================
-
+FILES_TO_PROCESS=( "amass.zip" "dirb.zip" "dirbuster.zip" "dnsmap.txt" "fasttrack.txt" "fern-wifi.zip" "john.lst" "legion.zip" "metasploit.zip" "nmap.lst" "rockyou.txt.zip" "sqlmap.txt" "wfuzz.zip" "wifite.txt" )
 
 clone_repo() {
     local repo_url="$1"
     local dest_dir="$2"
     if [[ ! -d "$dest_dir" ]]; then
-        echo "[*] Clonando $repo_url en $dest_dir..."
+        echo "[*] Cloning $repo_url into $dest_dir..."
         if echo "$SUDO_PASS" | sudo -S git clone "$repo_url" "$dest_dir" &>/dev/null; then
-            echo "✅ Repo $(basename "$dest_dir") instalada"
+            echo "✅ Repo $(basename "$dest_dir") installed"
         else
-            echo "❌ No se pudo clonar repo $(basename "$dest_dir")"
+            echo "❌ Could not clone repo $(basename "$dest_dir")"
         fi
     else
-        echo "[+] El repositorio $repo_url ya existe en $dest_dir"
+        echo "[+] Repo $repo_url already exists in $dest_dir"
     fi
 }
 process_files() {
     local src_dir="$WORDLISTS_DIR"
-
     for file_name in "${FILES_TO_PROCESS[@]}"; do
         local src_file="$src_dir/$file_name"
-
         if [[ -f "$src_file" ]]; then
             if [[ "$file_name" == "rockyou.txt.zip" ]]; then
-                echo "[+] Descomprimiendo $file_name en $src_dir"
+                echo "[+] Unzipping $file_name in $src_dir"
                 run_sudo unzip -o "$src_file" -d "$src_dir" >/dev/null
                 run_sudo rm -f "$src_file"
             elif [[ "$file_name" == *.zip ]]; then
                 local folder_name="${file_name%.zip}"
                 local dest_dir="$src_dir/$folder_name"
                 run_sudo mkdir -p "$dest_dir"
-                echo "[+] Descomprimiendo $file_name en $dest_dir"
+                echo "[+] Unzipping $file_name in $dest_dir"
                 run_sudo unzip -o "$src_file" -d "$dest_dir" >/dev/null
                 run_sudo rm -f "$src_file"
             else
-                echo "[+] Manteniendo $file_name en $src_dir"
+                echo "[+] Keeping $file_name in $src_dir"
             fi
         else
-            echo "[!] Archivo no encontrado: $src_file"
+            echo "[!] File not found: $src_file"
         fi
     done
 }
-
 
 clone_repo "$SECLISTS_REPO" "$USR_SHARE/SecLists"
 clone_repo "$WORDLISTS_REPO" "$WORDLISTS_DIR"
 process_files
 
 # =============================
-# CLONAR TOOLS Y EXPORTAR PATH
+# CLONE TOOLS AND EXPORT PATH
 # =============================
-
-# Si ya existe /tools, eliminarlo
 if [[ -d "/tools" ]]; then
-    echo "[*] Eliminando /tools existente..."
+    echo "[*] Removing existing /tools..."
     run_sudo rm -rf /tools
 fi
 
-# Clonar repo en /tools
 clone_repo "https://github.com/g333k/tools" "/tools"
 run_sudo chown -R "$USER:$USER" /tools
 run_sudo chmod -R 755 /tools
-# Agregar al PATH
-if ! grep -q '/tools/bin' "$HOME/.zshrc"; then
-    echo "[*] Agregando /tools/bin al PATH en .zshrc..."
-    echo 'export PATH=$PATH:/tools/bin' >> "$HOME/.zshrc"
+
+# Copy /tools/bin binaries into /usr/bin, then remove /tools/bin
+if [[ -d "/tools/bin" ]]; then
+    echo "[*] Copying /tools/bin binaries into /usr/bin..."
+    run_sudo cp -a /tools/bin/* /usr/bin/
+    echo "[*] Removing /tools/bin..."
+    run_sudo rm -rf /tools/bin
 fi
 
-# Instalar y limpiar scripts auxiliares
+
+# Install and clean helper scripts
 run_sudo /tools/windows/install_windows_tools.sh
 run_sudo /tools/linux/install_linux_tools.sh
 run_sudo rm /tools/windows/install_windows_tools.sh
 run_sudo rm /tools/linux/install_linux_tools.sh
-# =============================
-# CLONAR WEB & SHELLS
-# =============================
 
-# Si ya existe /tools, eliminarlo
+# =============================
+# CLONE WEB & SHELLS
+# =============================
 if [[ -d "/g3web" ]]; then
-    echo "[*] Eliminando /g3web existente..."
+    echo "[*] Removing existing /g3web..."
     run_sudo rm -rf /g3web
 fi
 clone_repo "https://github.com/g333k/g3web" "/g3web"
 
+echo "✅ G3K installation finished!"
