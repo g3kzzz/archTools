@@ -111,7 +111,7 @@ fi
 
 PACMAN_TOOLS=( arp-scan net-tools locate tree net-snmp smbclient whois bind-tools finalrecon ffuf hashcat hashcat-utils subfinder gobuster enum4linux dnsrecon amap medusa hydra hash-identifier hashid responder metasploit crackmapexec netexec crowbar wireshark-qt gnu-netcat socat openssh freerdp2 openvpn john exiftool nfs-utils python-pyasn1-modules python-pip exploitdb wget smbmap ) 
 
-YAY_TOOLS=( nmap-git whatweb smtp-user-enum-git ruby-evil-winrm burpsuite proxychains-ng-git powershell-bin libreoffice-fresh mssql-tools go-sqlcmd )
+YAY_TOOLS=( whatweb smtp-user-enum-git ruby-evil-winrm burpsuite proxychains-ng-git powershell-bin libreoffice-fresh mssql-tools go-sqlcmd )
 
 install_pacman "${PACMAN_TOOLS[@]}"
 install_yay "${YAY_TOOLS[@]}"
