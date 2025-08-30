@@ -38,7 +38,7 @@ banner="
    ░░░░░░░░░   ░░░░░░░░   ░░░░░░░░   ░░░░░░░░  ░░░░░   ░░░░ 
      
                       Made by: g333k
-             Repo: https://github.com/g333k/dotfiles
+             Repo: https://github.com/g333k/archTools
 "
 
 clear
