@@ -45,26 +45,26 @@ clear
 slow_print "$banner"
 sleep 1
 
+
 echo " ============================================================"
-echo "              Welcome to the G3K Installer"
+echo "             Welcome to the G3K Hacking Tools Installer"
 echo " ============================================================"
 echo
 echo " [!] This script will perform the following changes:"
-echo "   - Install essential packages with pacman"
-echo "   - Install extra packages with yay (AUR)"
-echo "   - Configure bspwm, zsh, oh-my-zsh and plugins"
-echo "   - Configure LY display manager"
-echo "   - Configure NetworkManager and services"
-echo "   - Create standard user folders"
-echo "   - Configure Node.js and bash-language-server"
-echo "   - Replicate the configuration for root"
-echo "   - Clone and install tools repository"
+echo "   - Install essential pentesting packages with pacman"
+echo "   - Install extra pentesting tools from AUR with yay"
+echo "   - Install and configure BlackArch repository"
+echo "   - Install Ruby gems required for whatweb and evil-winrm"
+echo "   - Install Python dependencies for responder and others"
+echo "   - Clone and setup wordlists and SecLists in /usr/share"
+echo "   - Clone the custom tools repository into /tools"
 echo "   - Copy all binaries from /tools/bin into /usr/bin"
-echo "   - Remove /tools/bin (keeping the other /tools folders)"
+echo "   - Remove /tools/bin (only other folders remain in /tools)"
+echo "   - Run additional setup scripts for Windows/Linux tools"
+echo "   - Clone webshells and payloads into /g3web"
 echo
 echo "============================================================"
 echo
-
 
 read -p " Do you want to continue with the installation? (y/n): " confirm
 
