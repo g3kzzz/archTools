@@ -1,16 +1,81 @@
 #!/bin/bash
 set -e
 
+
+# --- ROOT RESTRICTION ---
+if [[ $EUID -eq 0 ]]; then
+  echo "[!] Do not run this script directly as root."
+  echo "[!] Run it as a normal user."
+  exit 1
+fi
+
+
+
 # =============================
 #   G3K Installer
 # =============================
 
-# 📛 Must NOT run directly as root
-if [[ $EUID -eq 0 ]]; then
-  echo "❌ Do not run this script directly as root."
-  echo "✅ Run it as a normal user."
-  exit 1
+# --- FUNCTION FOR ANIMATION ---
+slow_print() {
+  local text="$1"
+  for ((i=0; i<${#text}; i++)); do
+    echo -n "${text:$i:1}"
+    sleep 0.000
+  done
+  echo
+}
+
+# --- ASCII BANNER ---
+banner="
+ 
+    █████████   ████████   ████████   ████████  █████   ████
+   ███░░░░░███ ███░░░░███ ███░░░░███ ███░░░░███░░███   ███░ 
+  ███     ░░░ ░░░    ░███░░░    ░███░░░    ░███ ░███  ███   
+ ░███            ██████░    ██████░    ██████░  ░███████    
+ ░███    █████  ░░░░░░███  ░░░░░░███  ░░░░░░███ ░███░░███   
+ ░░███  ░░███  ███   ░███ ███   ░███ ███   ░███ ░███ ░░███  
+  ░░█████████ ░░████████ ░░████████ ░░████████  █████ ░░████
+   ░░░░░░░░░   ░░░░░░░░   ░░░░░░░░   ░░░░░░░░  ░░░░░   ░░░░ 
+     
+                      Made by: g333k
+             Repo: https://github.com/g333k/dotfiles
+"
+
+clear
+slow_print "$banner"
+sleep 1
+
+echo " ============================================================"
+echo "              Welcome to the G3K Installer"
+echo " ============================================================"
+echo
+echo " [!] This script will perform the following changes:"
+echo "   - Install essential packages with pacman"
+echo "   - Install extra packages with yay (AUR)"
+echo "   - Configure bspwm, zsh, oh-my-zsh and plugins"
+echo "   - Configure LY display manager"
+echo "   - Configure NetworkManager and services"
+echo "   - Create standard user folders"
+echo "   - Configure Node.js and bash-language-server"
+echo "   - Replicate the configuration for root"
+echo "   - Clone and install tools repository"
+echo "   - Copy all binaries from /tools/bin into /usr/bin"
+echo "   - Remove /tools/bin (keeping the other /tools folders)"
+echo
+echo "============================================================"
+echo
+
+
+read -p " Do you want to continue with the installation? (y/n): " confirm
+
+if [[ "$confirm" != "y" && "$confirm" != "Y" ]]; then
+  echo " [!] Installation cancelled by the user."
+  exit 0
 fi
+
+clear
+echo " [+] Starting installation..."
+sleep 2
 
 # =============================
 # PASSWORD HANDLING
@@ -27,6 +92,15 @@ while true; do
         echo "❌ Wrong password, try again."
     fi
 done
+
+
+
+# =============================
+# SUDOERS TEMPORAL PARA YAY
+# =============================
+TMP_SUDOERS="/etc/sudoers.d/99_g3k_tmp"
+echo "$USER ALL=(ALL) NOPASSWD: /usr/bin/pacman, /usr/bin/makepkg, /usr/bin/chsh" | sudo tee "$TMP_SUDOERS" >/dev/null
+
 
 # Custom sudo function
 run_sudo() {
@@ -60,6 +134,12 @@ install_blackarch() {
         return 1
     fi
 }
+
+pause_and_clear() {
+  sleep 2
+  clear
+}
+
 install_pacman() {
   for pkg in "$@"; do
     if pacman -Qi "$pkg" &>/dev/null; then
@@ -112,10 +192,12 @@ fi
 PACMAN_TOOLS=( arp-scan net-tools locate tree net-snmp smbclient whois bind-tools finalrecon ffuf hashcat hashcat-utils subfinder gobuster enum4linux dnsrecon amap medusa hydra hash-identifier hashid responder metasploit crackmapexec netexec crowbar wireshark-qt gnu-netcat socat openssh freerdp2 openvpn john exiftool nfs-utils python-pyasn1-modules python-pip exploitdb wget smbmap ) 
 
 YAY_TOOLS=( whatweb smtp-user-enum-git ruby-evil-winrm burpsuite proxychains-ng-git powershell-bin libreoffice-fresh mssql-tools go-sqlcmd )
-
+echo "[+] PACMAN TOOLS..."
 install_pacman "${PACMAN_TOOLS[@]}"
+pause_and_clear
+echo "[+] YAY TOOLS..."
 install_yay "${YAY_TOOLS[@]}"
-
+pause_and_clear
 # =============================
 # RUBY FIXES (WHATWEB + EVIL-WINRM)
 # =============================
@@ -156,7 +238,7 @@ pip install --break-system-packages --upgrade pip
 pip install --break-system-packages aioquic tldextract bloodhound python-ldap dnspython impacket netifaces &>/dev/null && \
   echo "✅ responder dependencies installed"
 sudo pip install aioquic --break-system-packages &>/dev/null
-
+pause_and_clear
 # =============================
 # WORDLISTS & SECLISTS
 # =============================
@@ -245,5 +327,22 @@ if [[ -d "/g3web" ]]; then
     run_sudo rm -rf /g3web
 fi
 clone_repo "https://github.com/g333k/g3web" "/g3web"
+pause_and_clear
 
-echo "✅ G3K installation finished!"
+
+# =============================
+# LIMPIEZA DE SUDOERS
+# =============================
+echo " [+] Cleaning up sudoers rule..."
+run_sudo rm -f /etc/sudoers.d/99_g3k_tmp
+echo " [✓] Sudoers restored"
+pause_and_clear
+
+# -------------------------
+#     FINAL
+# -------------------------
+echo "============================================================"
+echo " [✓] All done."
+echo " ✅ G3K installation finished!"
+echo "============================================================"
+pause_and_clear
