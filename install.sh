@@ -185,7 +185,7 @@ fi
 # TOOLS INSTALLATION
 # =============================
 
-PACMAN_TOOLS=( arp-scan net-tools locate tree net-snmp smbclient whois bind-tools finalrecon ffuf hashcat hashcat-utils subfinder gobuster blackarch-config-lxdm enum4linux dnsrecon amap medusa hydra hash-identifier hashid responder metasploit crackmapexec netexec crowbar wireshark-qt gnu-netcat socat openssh freerdp2 openvpn john exiftool nfs-utils python-pyasn1-modules python-pip exploitdb wget smbmap ) 
+PACMAN_TOOLS=( arp-scan net-tools locate tree net-snmp smbclient whois bind-tools finalrecon ffuf hashcat hashcat-utils subfinder gobuster enum4linux dnsrecon amap medusa hydra hash-identifier hashid responder metasploit crackmapexec netexec crowbar wireshark-qt gnu-netcat socat openssh freerdp2 openvpn john exiftool nfs-utils python-pyasn1-modules python-pip exploitdb wget smbmap ) 
 
 YAY_TOOLS=( whatweb smtp-user-enum-git ruby-evil-winrm burpsuite proxychains-ng-git powershell-bin libreoffice-fresh mssql-tools go-sqlcmd )
 echo "[+] PACMAN TOOLS..."
@@ -194,17 +194,6 @@ pause_and_clear
 echo "[+] YAY TOOLS..."
 install_yay "${YAY_TOOLS[@]}"
 pause_and_clear
-echo "[?] ¿Quieres copiar la configuración de BlackArch LXDM? (y/n)"
-read -r respuesta
-
-if [[ "$respuesta" == "y" || "$respuesta" == "Y" ]]; then
-  echo "[+] Copiando configuración de BlackArch LXDM..."
-  run_sudo cp -a /etc/lxdm-blackarch/* /etc/lxdm/
-  run_sudo cp -a /usr/share/lxdm-blackarch/* /usr/share/lxdm/
-  run_sudo cp -a /usr/share/xsessions-blackarch/* /usr/share/xsessions/
-else
-  echo "[*] Saltando copia de configuración de BlackArch LXDM..."
-fi
 
 # =============================
 # RUBY FIXES (WHATWEB + EVIL-WINRM)
