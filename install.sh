@@ -234,7 +234,7 @@ fi
 pip install --break-system-packages --upgrade pip
 pip install --break-system-packages aioquic tldextract bloodhound python-ldap dnspython impacket netifaces &>/dev/null && \
   echo "✅ responder dependencies installed"
-sudo pip install aioquic --break-system-packages &>/dev/null
+run_sudo pip install aioquic --break-system-packages &>/dev/null
 pause_and_clear
 # =============================
 # WORDLISTS & SECLISTS
@@ -337,6 +337,43 @@ pause_and_clear
 
 
 
+
+# =============================
+# DNScat2 INSTALLATION
+# =============================
+cd /tools/linux/ || exit 1
+
+DNScat2_DIR="dnscat2"
+
+echo "[*] Clonando dnscat2..."
+if [[ -d "$DNScat2_DIR" ]]; then
+    echo "[*] $DNScat2_DIR ya existe, eliminando carpeta antigua..."
+    rm -rf "$DNScat2_DIR"
+fi
+
+git clone https://github.com/iagox86/dnscat2.git "$DNScat2_DIR"
+echo "[+] dnscat2 clonado."
+
+# Instalar dependencias Ruby
+if [[ -f "$DNScat2_DIR/server/Gemfile" ]]; then
+    echo "[*] Instalando dependencias Ruby de dnscat2..."
+    cd "$DNScat2_DIR/server/" || exit 1
+    if ! gem list bundler -i >/dev/null 2>&1; then
+        run_sudo gem install bundler
+    fi
+    sudo bundle install
+    cd /tools/linux/ || exit 1
+    echo "[+] Dependencias Ruby instaladas."
+fi
+
+# Crear wrapper en /usr/bin
+echo "[*] Creando wrapper /usr/bin/dnscat2..."
+run_sudo tee /usr/bin/dnscat2 >/dev/null <<EOF
+#!/bin/bash
+ruby /tools/linux/dnscat2/server/dnscat2.rb "\$@"
+EOF
+run_sudo chmod +x /usr/bin/dnscat2
+echo "[+] Wrapper listo: puedes ejecutar 'dnscat2' desde cualquier lugar."
 
 # -------------------------
 #     FINAL
