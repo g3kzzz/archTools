@@ -185,7 +185,7 @@ fi
 # TOOLS INSTALLATION
 # =============================
 
-PACMAN_TOOLS=( arp-scan net-tools locate tree net-snmp burpsuite smbclient chisel whois bind-tools finalrecon ffuf hashcat hashcat-utils subfinder gobuster enum4linux dnsrecon amap medusa hydra hash-identifier hashid responder metasploit crackmapexec netexec crowbar wireshark-qt gnu-netcat socat openssh freerdp2 openvpn john exiftool nfs-utils python-pyasn1-modules python-pip exploitdb wget smbmap ) 
+PACMAN_TOOLS=( arp-scan net-tools locate tree net-snmp burpsuite smbclient chisel whois bind-tools finalrecon ffuf hashcat hashcat-utils subfinder gobuster enum4linux dnsrecon amap medusa hydra hash-identifier hashid responder metasploit crackmapexec netexec crowbar wireshark-qt gnu-netcat socat openssh freerdp2 openvpn john exiftool nfs-utils python-pyasn1-modules python-pip ptunnel exploitdb wget smbmap ) 
 
 YAY_TOOLS=( whatweb smtp-user-enum-git ruby-evil-winrm proxychains-ng-git powershell-bin libreoffice-fresh mssql-tools go-sqlcmd )
 echo "[+] PACMAN TOOLS..."
