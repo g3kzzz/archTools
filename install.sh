@@ -235,7 +235,6 @@ pip install --break-system-packages --upgrade pip
 pip install --break-system-packages aioquic tldextract bloodhound python-ldap dnspython impacket netifaces &>/dev/null && \
   echo "✅ responder dependencies installed"
 run_sudo pip install aioquic --break-system-packages &>/dev/null
-pip install --user git+https://github.com/xmendez/wfuzz.git
 pause_and_clear
 # =============================
 # WORDLISTS & SECLISTS
