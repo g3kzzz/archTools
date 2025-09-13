@@ -187,7 +187,7 @@ fi
 
 PACMAN_TOOLS=( arp-scan net-tools locate tree net-snmp burpsuite smbclient chisel whois bind-tools finalrecon ffuf hashcat hashcat-utils subfinder gobuster enum4linux dnsrecon amap medusa hydra hash-identifier hashid responder metasploit crackmapexec netexec crowbar wireshark-qt gnu-netcat socat openssh freerdp2 openvpn john exiftool nfs-utils python-pyasn1-modules python-pip ptunnel exploitdb wget smbmap ) 
 
-YAY_TOOLS=( whatweb smtp-user-enum-git ruby-evil-winrm wfuzz proxychains-ng-git powershell-bin libreoffice-fresh mssql-tools go-sqlcmd )
+YAY_TOOLS=( whatweb smtp-user-enum-git ruby-evil-winrm proxychains-ng-git powershell-bin libreoffice-fresh mssql-tools go-sqlcmd )
 echo "[+] PACMAN TOOLS..."
 install_pacman "${PACMAN_TOOLS[@]}"
 pause_and_clear
@@ -231,10 +231,11 @@ fi
 # =============================
 # RESPONDER FIX (PIP DEPS)
 # =============================
-pip install --break-system-packages --upgrade pip
+pip install --break-system-packages --upgrade pip 
 pip install --break-system-packages aioquic tldextract bloodhound python-ldap dnspython impacket netifaces &>/dev/null && \
   echo "✅ responder dependencies installed"
 run_sudo pip install aioquic --break-system-packages &>/dev/null
+pip install --user git+https://github.com/xmendez/wfuzz.git
 pause_and_clear
 # =============================
 # WORDLISTS & SECLISTS
