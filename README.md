@@ -1,112 +1,57 @@
-# 📦 archTools  
+# archTools
 
-Instalador automático de herramientas de **hacking, pentesting y CTFs** en **Arch Linux** y derivados.  
-Este script configura repositorios, instala dependencias, añade herramientas esenciales y prepara wordlists y exploits para que tengas un entorno listo para la acción.  
+Instalador minimalista de herramientas de pentesting para **Arch Linux**.
 
----
+## Qué hace
+- Añade BlackArch (si ejecutas el módulo correspondiente).  
+- Instala `yay` (AUR) si falta.  
+- Instala paquetes `pacman` y AUR categorizados por módulos.  
+- Clona y organiza `/usr/share/wordlists` y `/usr/share/SecLists`.  
+- Clona `https://github.com/g3kzzz/tools` en `/tools`, copia `tools/bin/*` a `/usr/bin` y ejecuta sus instaladores.  
+- Maneja `sudo` temporalmente con una entrada en `/etc/sudoers.d/99_g3k_tmp` y la elimina al terminar.
 
-## ⚙️ Características  
-
-✅ Configura el repositorio de **BlackArch**  
-✅ Instala **yay** para manejar paquetes del AUR  
-✅ Instala herramientas de **reconocimiento, explotación y post-explotación**  
-✅ Configura librerías de **Ruby** y dependencias de **Responder**  
-✅ Descarga y organiza **SecLists** y wordlists adicionales  
-✅ Clona repositorios personales de **g3tools** y **g3web**  
-✅ Añade binarios al `PATH` automáticamente  
-
----
-
-## 🛠️ Herramientas instaladas  
-
-### 🔎 Reconocimiento y enumeración  
-- [arp-scan](https://linux.die.net/man/1/arp-scan) – Escaneo de red vía ARP  
-- [net-tools](https://wiki.archlinux.org/title/Net-tools) – ifconfig, netstat, etc.  
-- [whois](https://linux.die.net/man/1/whois) – Información de dominios/IP  
-- [bind-tools](https://wiki.archlinux.org/title/BIND) – Incluye `dig` y `nslookup`  
-- [finalrecon](https://github.com/thewhiteh4t/FinalRecon) – Información de sitios web  
-- [ffuf](https://github.com/ffuf/ffuf) – Fuzzing de directorios y parámetros  
-- [nmap-git](https://nmap.org/) – Escaneo avanzado de red  
-- [whatweb](https://github.com/urbanadventurer/WhatWeb) – Detección de tecnologías web  
-- [subfinder](https://github.com/projectdiscovery/subfinder) – Descubrimiento de subdominios  
-- [enum4linux](https://github.com/CiscoCXSecurity/enum4linux) – Enumeración de servidores Windows  
-- [smtp-user-enum](https://pentestmonkey.net/tools/user-enumeration/smtp-user-enum) – Enumeración de usuarios vía SMTP  
-- [gobuster](https://github.com/OJ/gobuster) – Descubrimiento de directorios/archivos  
-
-### 📡 Análisis de tráfico y red  
-- [Wireshark](https://www.wireshark.org/) – Análisis de tráfico de red  
-- [netcat](http://nc110.sourceforge.net/) – Conexiones TCP/UDP simples  
-- [socat](http://www.dest-unreach.org/socat/) – Redirección avanzada de tráfico  
-
-### 🔐 Acceso remoto y VPN  
-- [OpenSSH](https://www.openssh.com/) – Conexiones seguras SSH  
-- [FreeRDP](https://www.freerdp.com/) – RDP a sistemas Windows  
-- [OpenVPN](https://openvpn.net/) – VPN segura  
-
-### 🔑 Cracking y ataques  
-- [hashcat](https://hashcat.net/hashcat/) – Cracking de contraseñas con GPU  
-- [john the ripper](https://www.openwall.com/john/) – Cracking en CPU  
-- [medusa](https://github.com/jmk-foofus/medusa) – Ataques de fuerza bruta  
-- [hydra](https://github.com/vanhauser-thc/thc-hydra) – Fuerza bruta contra múltiples servicios  
-- [hash-identifier](https://github.com/blackploit/hash-identifier) – Identificación de hashes  
-- [responder](https://github.com/lgandx/Responder) – Captura hashes y ataques NTLM  
-
-### 💣 Explotación y post-explotación  
-- [Metasploit](https://www.metasploit.com/) – Framework de explotación  
-- [ExploitDB (searchsploit)](https://www.exploit-db.com/) – Búsqueda de exploits locales  
-- [Evil-WinRM](https://github.com/Hackplayers/evil-winrm) – Conexión a Windows via WinRM  
-- [Crowbar](https://github.com/galkan/crowbar) – Ataques de fuerza bruta a RDP/SSH/VNC  
-- [proxychains-ng](https://github.com/haad/proxychains) – Redirección de tráfico por proxies  
-- [netexec](https://github.com/Pennyw0rth/NetExec) – Ejecución remota de comandos en Windows/Linux  
-- [Powershell (binario Linux)](https://github.com/PowerShell/PowerShell)  
-
-### 🗄️ Bases de datos  
-- [mssql-tools](https://learn.microsoft.com/en-us/sql/tools/sqlcmd-utility) – Cliente MSSQL  
-- [go-sqlcmd](https://github.com/microsoft/go-sqlcmd) – Cliente SQL moderno  
-
----
-
-## 📂 Wordlists y SecLists  
-
-El instalador clona y organiza automáticamente:  
-- [SecLists](https://github.com/danielmiessler/SecLists)  
-- [Wordlists g3](https://github.com/g333k/wordlists)  
-- Descompresión automática de wordlists comunes (rockyou, dirbuster, nmap.lst, etc.)  
-
-📌 Se almacenan en:  
+## Uso rápido
 ```bash
-/usr/share/wordlists
-/usr/share/SecLists
-```
-🚀 Instalación
-```
-git clone https://github.com/g333k/archTools.git
+git clone https://github.com/g3kzzz/archTools.git
 cd archTools
 chmod +x install.sh
-./install.sh
-```
-    ⚠️ Debes ejecutarlo como usuario normal (no root).
+./install.sh [options]
 
-🧩 Repositorios adicionales
+Modos / opciones
 
-    g3tools – Scripts auxiliares Linux/Windows
+-h, --help : muestra ayuda.
 
-    g3web – Webshells y payloads web
+-A, --all : ejecutar todos los módulos sin preguntas.
 
-📝 Notas
+-y, --yes : responder "yes" por defecto a las preguntas por módulo.
 
-    El script añade automáticamente al PATH las rutas necesarias.
+-s, --single <file> : ejecutar solo el/los módulo(s) especificado(s). Repetible o coma-separado.
 
-    Se corrigen dependencias de Ruby (para WhatWeb y Evil-WinRM).
+--skip <pattern> : omitir módulos cuyo nombre contenga pattern. Repetible o coma-separado.
 
-    Responder se ajusta con dependencias de pip.
+-l, --list : listar módulos disponibles.
 
-📖 Documentación recomendada
+-u, --update : git pull del repo antes de ejecutar.
 
-    ArchWiki - Pacman
+-d, --dry-run : mostrar plan y salir (no hace cambios).
 
-    BlackArch Linux
 
-    Offensive Security ExploitDB
+Módulos (qué instala, resumen)
 
-    Kali Tools List
+1.blackarch.sh — instala/actualiza repo BlackArch y actualiza sistema.
+
+2.gathering.sh — herramientas de recolección (amass, subfinder, ffuf...).
+
+3.enumeration.sh — nmap, enum4linux, smbmap, etc.
+
+4.explotation.sh — metasploit, exploitdb, fuzzers.
+
+5.post-exploitation.sh — utilidades post-explotación.
+
+6.reporting.sh — herramientas de reporting/export.
+
+7.wordlists.sh — clona SecLists y wordlists g3, descomprime comunes en /usr/share/wordlists.
+
+8.misc-tools.sh — clona g3kzzz/tools en /tools, copia binarios y ejecuta instaladores locales.
+
+
