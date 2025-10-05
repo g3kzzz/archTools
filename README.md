@@ -2,57 +2,52 @@
 
 Instalador minimalista de herramientas de pentesting para **Arch Linux**.
 
+![License: MIT](https://img.shields.io/badge/license-MIT-brightgreen)
+
 ## Qué hace
 - Añade BlackArch (si ejecutas el módulo correspondiente).  
 - Instala `yay` (AUR) si falta.  
-- Instala paquetes `pacman` y AUR categorizados por módulos.  
+- Instala paquetes vía `pacman` y AUR organizados por módulos.  
 - Clona y organiza `/usr/share/wordlists` y `/usr/share/SecLists`.  
-- Clona `https://github.com/g3kzzz/tools` en `/tools`, copia `tools/bin/*` a `/usr/bin` y ejecuta sus instaladores.  
-- Maneja `sudo` temporalmente con una entrada en `/etc/sudoers.d/99_g3k_tmp` y la elimina al terminar.
+- Clona `https://github.com/g3kzzz/tools` en `/tools`, copia `tools/bin/*` a `/usr/bin` y ejecuta sus instaladores locales.  
+- Maneja `sudo` temporalmente añadiendo `/etc/sudoers.d/99_g3k_tmp` y elimina la entrada al terminar.
+
+---
 
 ## Uso rápido
+
 ```bash
+# clona el repo y ejecuta el instalador
 git clone https://github.com/g3kzzz/archTools.git
 cd archTools
 chmod +x install.sh
-./install.sh [options]
-
+./install.sh [OPCIONES]
 ```
-##Modos / opciones
 
--h, --help : muestra ayuda.
+## Modos
 
--A, --all : ejecutar todos los módulos sin preguntas.
+-h, --help
+Muestra ayuda y lista de opciones.
 
--y, --yes : responder "yes" por defecto a las preguntas por módulo.
+-A, --all
+Ejecuta todos los módulos sin interacción.
 
--s, --single <file> : ejecutar solo el/los módulo(s) especificado(s). Repetible o coma-separado.
+-y, --yes
+Contesta yes por defecto a los prompts de los módulos.
 
---skip <pattern> : omitir módulos cuyo nombre contenga pattern. Repetible o coma-separado.
+-s <file>, --single <file>
+Ejecuta sólo el/los módulo(s) especificado(s). Puede repetirse o pasarse coma-separado.
+Ej.: -s 2.gathering.sh o -s 2.gathering.sh,7.wordlists.sh
 
--l, --list : listar módulos disponibles.
+--skip <pattern>
+Omite módulos cuyo nombre contenga pattern. Repetible o coma-separado.
+Ej.: --skip blackarch --skip msf
 
--u, --update : git pull del repo antes de ejecutar.
+-l, --list
+Lista módulos disponibles (nombre, descripción breve).
 
--d, --dry-run : mostrar plan y salir (no hace cambios).
+-u, --update
+Ejecuta git pull en el repo antes de comenzar.
 
-
-Módulos (qué instala, resumen)
-
-1.blackarch.sh — instala/actualiza repo BlackArch y actualiza sistema.
-
-2.gathering.sh — herramientas de recolección (amass, subfinder, ffuf...).
-
-3.enumeration.sh — nmap, enum4linux, smbmap, etc.
-
-4.explotation.sh — metasploit, exploitdb, fuzzers.
-
-5.post-exploitation.sh — utilidades post-explotación.
-
-6.reporting.sh — herramientas de reporting/export.
-
-7.wordlists.sh — clona SecLists y wordlists g3, descomprime comunes en /usr/share/wordlists.
-
-8.misc-tools.sh — clona g3kzzz/tools en /tools, copia binarios y ejecuta instaladores locales.
-
-
+-d, --dry-run
+Muestra el plan/acciones que se realizarían y sale (no hace cambios).
