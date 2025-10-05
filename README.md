@@ -21,11 +21,11 @@ Instalador minimalista de herramientas de pentesting para **Arch Linux**.
 git clone https://github.com/g3kzzz/archTools.git
 cd archTools
 chmod +x install.sh
-./install.sh [OPCIONES]
+./install.sh 
 ```
 
 ## Modos
-
+```bash
 -h, --help
 Muestra ayuda y lista de opciones.
 
@@ -51,3 +51,4 @@ Ejecuta git pull en el repo antes de comenzar.
 
 -d, --dry-run
 Muestra el plan/acciones que se realizarían y sale (no hace cambios).
+```
