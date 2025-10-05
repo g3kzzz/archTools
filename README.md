@@ -16,8 +16,9 @@ git clone https://github.com/g3kzzz/archTools.git
 cd archTools
 chmod +x install.sh
 ./install.sh [options]
-´´´
-Modos / opciones
+
+```
+##Modos / opciones
 
 -h, --help : muestra ayuda.
 
