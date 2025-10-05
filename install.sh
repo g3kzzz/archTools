@@ -1,385 +1,304 @@
-#!/bin/bash
-set -e
+#!/usr/bin/env bash
+# install.sh - Main installer for archtools (tuned modes)
+# Author: g3kzzz
+# Location: ~/Documents/archtools
 
+set -euo pipefail
 
-# --- ROOT RESTRICTION ---
-if [[ $EUID -eq 0 ]]; then
-  echo "[!] Do not run this script directly as root."
-  echo "[!] Run it as a normal user."
-  exit 1
-fi
+# ---------- Colors ----------
+GREEN="\033[0;32m"
+YELLOW="\033[1;33m"
+RED="\033[0;31m"
+BLUE="\033[0;34m"
+RESET="\033[0m"
 
-
-
-# =============================
-#   G3K Installer
-# =============================
-
-# --- FUNCTION FOR ANIMATION ---
-slow_print() {
-  local text="$1"
-  for ((i=0; i<${#text}; i++)); do
-    echo -n "${text:$i:1}"
-    sleep 0.000
-  done
-  echo
-}
-
-# --- ASCII BANNER ---
-
-banner="                           
-   _____ ___ _____ _____         _     
-  |   __|_  |  |  |_   _|___ ___| |___ 
-  |  |  |_  |    -| | | | . | . | |_ -|
-  |_____|___|__|__| |_| |___|___|_|___|
-                                                            
-             Made by: g3kzzz
- Repo: https://github.com/g333k/archTools
-"
-
-clear
-slow_print "$banner"
-sleep 1
-
-
-echo " ============================================================"
-echo "             Welcome to the G3K Hacking Tools Installer"
-echo " ============================================================"
-echo
-echo " [!] This script will perform the following changes:"
-echo "   - Install essential pentesting packages with pacman"
-echo "   - Install extra pentesting tools from AUR with yay"
-echo "   - Install and configure BlackArch repository"
-echo "   - Install Ruby gems required for whatweb and evil-winrm"
-echo "   - Install Python dependencies for responder and others"
-echo "   - Clone and setup wordlists and SecLists in /usr/share"
-echo "   - Clone the custom tools repository into /tools"
-echo "   - Copy all binaries from /tools/bin into /usr/bin"
-echo "   - Remove /tools/bin (only other folders remain in /tools)"
-echo "   - Run additional setup scripts for Windows/Linux tools"
-echo "   - Clone webshells and payloads into /g3web"
-echo
-echo "============================================================"
-echo
-
-read -p " Do you want to continue with the installation? (y/n): " confirm
-
-if [[ "$confirm" != "y" && "$confirm" != "Y" ]]; then
-  echo " [!] Installation cancelled by the user."
-  exit 0
-fi
-
-clear
-echo " [+] Starting installation..."
-sleep 2
-
-# =============================
-# PASSWORD HANDLING
-# =============================
-while true; do
-    echo -n "🔑 Enter your sudo password: "
-    read -s SUDO_PASS
-    echo
-    # Validate password
-    if echo "$SUDO_PASS" | sudo -S -v &>/dev/null; then
-        echo "✅ Password accepted"
-        break
-    else
-        echo "❌ Wrong password, try again."
-    fi
-done
-
-
-
-# =============================
-# SUDOERS TEMPORAL PARA YAY
-# =============================
+# ---------- Paths ----------
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+MODULES_DIR="$SCRIPT_DIR/modules"
 TMP_SUDOERS="/etc/sudoers.d/99_g3k_tmp"
-echo "$USER ALL=(ALL) NOPASSWD: /usr/bin/pacman, /usr/bin/makepkg, /usr/bin/chsh" | sudo tee "$TMP_SUDOERS" >/dev/null
 
+# ---------- Defaults / Flags ----------
+MODE_ALL=false        # -A / --all  -> non-interactive install of all modules
+ASSUME_YES=false      # -y / --yes  -> auto-yes for module prompts (interactive)
+LIST_ONLY=false       # -l / --list -> list modules and exit
+SINGLE_MODULES=()     # -s / --single <file> -> array of exact filenames to run
+UPDATE_REPO=false     # -u / --update
+DRY_RUN=false         # -d / --dry-run -> show commands, don't run
+SKIP_PATTERNS=()      # --skip <pattern> -> array of patterns to skip (substring match)
 
-# Custom sudo function
-run_sudo() {
-    echo "$SUDO_PASS" | sudo -S "$@"
+# ---------- Help (plain text, no colors) ----------
+show_help() {
+cat <<'EOF'
+ArchTools Installer
+
+Usage: ./install.sh [options]
+
+Modes / options:
+  -h, --help
+        Show this help message and exit (plain text).
+  -A, --all
+        Install ALL modules without prompts (non-interactive).
+  -y, --yes
+        Auto-answer "yes" to module prompts (interactive mode).
+  -s, --single <file>
+        Install only the specified module (exact filename). Can be used
+        multiple times or with a comma-separated list: -s a.sh -s b.sh
+        or -s a.sh,b.sh
+  -l, --list
+        List available modules and exit.
+  -u, --update
+        Update this repo (git pull) before running.
+  -d, --dry-run
+        Show what would run (no changes made).
+  --skip <pattern>
+        Skip modules whose filename contains <pattern>. Can be repeated
+        or given as a comma-separated list.
+
+Notes:
+  - --all (-A) implies non-interactive install: every module is executed.
+  - --yes (-y) answers "yes" to module prompts but still allows per-module
+    selection (unless you also use --all).
+  - --single and --all are mutually exclusive.
+  - --dry-run will not request sudo password nor change the system.
+
+Examples:
+  ./install.sh -A
+    Install everything without prompts.
+
+  ./install.sh -y
+    Ask per-module but default Yes.
+
+  ./install.sh -s 7.wordlists.sh -s blackarch.sh
+    Run only those two modules.
+
+  ./install.sh --skip blackarch
+    Run all modules except those whose name contains "blackarch".
+
+EOF
+exit 0
 }
 
-# =============================
-# AUXILIARY FUNCTIONS
-# =============================
-install_blackarch() {
-    if grep -q "\[blackarch\]" /etc/pacman.conf; then
-        echo "✅ BlackArch repo already installed."
-    else
-        echo "[*] Downloading and installing BlackArch..."
-        cd /tmp || return
-        curl -s -O https://blackarch.org/strap.sh
-        run_sudo chmod +x strap.sh &>/dev/null
-        if run_sudo ./strap.sh &>/dev/null; then
-            echo "✅ BlackArch successfully installed"
-        else
-            echo "❌ Error installing BlackArch"
-            return 1
-        fi
-    fi
-
-    echo "[*] Updating repositories..."
-    if run_sudo pacman -Syyu --noconfirm --overwrite '*' &>/dev/null; then
-        echo "✅ BlackArch repositories updated"
-    else
-        echo "❌ Error updating BlackArch repos"
-        return 1
-    fi
-}
-
-pause_and_clear() {
-  sleep 2
-  clear
-}
-
-install_pacman() {
-  for pkg in "$@"; do
-    if pacman -Qi "$pkg" &>/dev/null; then
-      echo "✅ $pkg already installed"
-    else
-      if echo "$SUDO_PASS" | sudo -S pacman -S --needed --noconfirm "$pkg" &>/dev/null; then
-        echo "✅ $pkg installed"
-      else
-        echo "❌ Could not install $pkg with pacman"
-      fi
-    fi
-  done
-}
-
-install_yay() {
-  for pkg in "$@"; do
-    if yay -Qi "$pkg" &>/dev/null; then
-      echo "✅ $pkg already installed"
-    else
-      if yay -S --needed --noconfirm "$pkg" &>/dev/null; then
-        echo "✅ $pkg installed"
-      else
-        echo "❌ Could not install $pkg with yay"
-      fi
-    fi
-  done
-}
-
-install_blackarch
-cd /home/$USER
-
-# =============================
-# YAY INSTALL
-# =============================
-if ! command -v yay &>/dev/null; then
-  cd /tmp
-  git clone https://aur.archlinux.org/yay.git &>/dev/null
-  cd yay
-  makepkg -si --noconfirm <<<"$SUDO_PASS" &>/dev/null
-  cd ~
-  echo "✅ yay installed"
-else
-  echo "✅ yay already installed"
-fi
-
-# =============================
-# TOOLS INSTALLATION
-# =============================
-
-PACMAN_TOOLS=( arp-scan net-tools locate tree net-snmp burpsuite smbclient chisel whois bind-tools finalrecon ffuf hashcat hashcat-utils subfinder gobuster enum4linux dnsrecon amap medusa hydra hash-identifier hashid responder metasploit crackmapexec netexec crowbar wireshark-qt gnu-netcat socat openssh freerdp2 openvpn john exiftool nfs-utils python-pyasn1-modules python-pip ptunnel exploitdb wget smbmap ) 
-
-YAY_TOOLS=( whatweb smtp-user-enum-git ruby-evil-winrm proxychains-ng-git powershell-bin libreoffice-fresh mssql-tools go-sqlcmd )
-echo "[+] PACMAN TOOLS..."
-install_pacman "${PACMAN_TOOLS[@]}"
-pause_and_clear
-echo "[+] YAY TOOLS..."
-install_yay "${YAY_TOOLS[@]}"
-pause_and_clear
-
-# =============================
-# RUBY FIXES (WHATWEB + EVIL-WINRM)
-# =============================
-echo "[+] Checking missing Ruby libraries..."
-OUT=$(whatweb --version 2>&1 || true)
-while echo "$OUT" | grep -q "cannot load such file --"; do
-  MISSING=$(echo "$OUT" | grep "cannot load such file --" | sed -E "s/.*-- ([a-zA-Z0-9_\-]+).*/\1/" | head -n 1)
-  echo "[!] Installing missing Ruby gem: $MISSING"
-  gem install --user-install "$MISSING" --no-document &>/dev/null
-  OUT=$(whatweb --version 2>&1 || true)
-done
-OUT=$(evil-winrm 2>&1 || true)
-while echo "$OUT" | grep -q "cannot load such file --"; do
-    MISSING=$(echo "$OUT" | grep "cannot load such file --" | sed -E "s/.*-- ([a-zA-Z0-9_\-]+).*/\1/" | head -n 1)
-    echo "[!] Installing dependency: $MISSING"
-    gem install --user-install "$MISSING" --no-document &>/dev/null
-    OUT=$(evil-winrm 2>&1 || true)
-done
-
-gem install --user-install evil-winrm --no-document &>/dev/null && echo "✅ evil-winrm installed"
-
-# Extra gems
-gem install --user-install csv --no-document &>/dev/null && echo "✅ gem csv installed"
-
-# Add GEM bin path
-GEM_PATH="$(ruby -e 'puts Gem.user_dir')/bin"
-if ! echo "$PATH" | grep -q "$GEM_PATH"; then
-  echo "[+] Adding $GEM_PATH to PATH"
-  echo "export PATH=\"$GEM_PATH:\$PATH\"" >> ~/.zshrc
-  echo "export PATH=\"$GEM_PATH:\$PATH\"" >> ~/.bashrc
-  export PATH="$GEM_PATH:$PATH"
-fi
-
-# =============================
-# RESPONDER FIX (PIP DEPS)
-# =============================
-pip install --break-system-packages --upgrade pip 
-pip install --break-system-packages aioquic tldextract bloodhound python-ldap dnspython impacket netifaces &>/dev/null && \
-  echo "✅ responder dependencies installed"
-run_sudo pip install aioquic --break-system-packages &>/dev/null
-pause_and_clear
-# =============================
-# WORDLISTS & SECLISTS
-# =============================
-USR_SHARE="/usr/share"
-SECLISTS_REPO="https://github.com/danielmiessler/SecLists.git"
-WORDLISTS_REPO="https://github.com/g333k/wordlists.git"
-WORDLISTS_DIR="$USR_SHARE/wordlists"
-
-FILES_TO_PROCESS=( "amass.zip" "dirb.zip" "dirbuster.zip" "dnsmap.txt" "fasttrack.txt" "fern-wifi.zip" "john.lst" "legion.zip" "metasploit.zip" "nmap.lst" "rockyou.txt.zip" "sqlmap.txt" "wfuzz.zip" "wifite.txt" )
-
-clone_repo() {
-    local repo_url="$1"
-    local dest_dir="$2"
-    if [[ ! -d "$dest_dir" ]]; then
-        echo "[*] Cloning $repo_url into $dest_dir..."
-        if echo "$SUDO_PASS" | sudo -S git clone "$repo_url" "$dest_dir" &>/dev/null; then
-            echo "✅ Repo $(basename "$dest_dir") installed"
-        else
-            echo "❌ Could not clone repo $(basename "$dest_dir")"
-        fi
-    else
-        echo "[+] Repo $repo_url already exists in $dest_dir"
-    fi
-}
-process_files() {
-    local src_dir="$WORDLISTS_DIR"
-    for file_name in "${FILES_TO_PROCESS[@]}"; do
-        local src_file="$src_dir/$file_name"
-        if [[ -f "$src_file" ]]; then
-            if [[ "$file_name" == "rockyou.txt.zip" ]]; then
-                echo "[+] Unzipping $file_name in $src_dir"
-                run_sudo unzip -o "$src_file" -d "$src_dir" >/dev/null
-                run_sudo rm -f "$src_file"
-            elif [[ "$file_name" == *.zip ]]; then
-                local folder_name="${file_name%.zip}"
-                local dest_dir="$src_dir/$folder_name"
-                run_sudo mkdir -p "$dest_dir"
-                echo "[+] Unzipping $file_name in $dest_dir"
-                run_sudo unzip -o "$src_file" -d "$dest_dir" >/dev/null
-                run_sudo rm -f "$src_file"
-            else
-                echo "[+] Keeping $file_name in $src_dir"
-            fi
-        else
-            echo "[!] File not found: $src_file"
+# ---------- Arg parsing helpers ----------
+append_csv_to_array() {
+    # $1 = csv string, $2 = name of array variable to append to
+    local csv="$1"; local arrname="$2"
+    IFS=',' read -r -a parts <<< "$csv"
+    for p in "${parts[@]}"; do
+        p="${p## }"  # trim leading spaces
+        p="${p%% }"  # trim trailing spaces
+        if [ -n "$p" ]; then
+            eval "$arrname+=(\"$p\")"
         fi
     done
 }
 
-clone_repo "$SECLISTS_REPO" "$USR_SHARE/SecLists"
-clone_repo "$WORDLISTS_REPO" "$WORDLISTS_DIR"
-process_files
-
-# =============================
-# CLONE TOOLS AND EXPORT PATH
-# =============================
-if [[ -d "/tools" ]]; then
-    echo "[*] Removing existing /tools..."
-    run_sudo rm -rf /tools
+# ---------- Parse args ----------
+if [ "$#" -gt 0 ]; then
+  while [[ $# -gt 0 ]]; do
+    case "$1" in
+      -h|--help) show_help ;;
+      -A|--all) MODE_ALL=true ;;
+      -y|--yes) ASSUME_YES=true ;;
+      -l|--list) LIST_ONLY=true ;;
+      -s|--single)
+         shift
+         if [ -z "${1:-}" ]; then
+             echo -e "${RED}[!] --single requires a filename${RESET}"
+             exit 1
+         fi
+         append_csv_to_array "$1" SINGLE_MODULES
+         ;;
+      -u|--update) UPDATE_REPO=true ;;
+      -d|--dry-run) DRY_RUN=true ;;
+      --skip)
+         shift
+         if [ -z "${1:-}" ]; then
+             echo -e "${RED}[!] --skip requires a pattern${RESET}"
+             exit 1
+         fi
+         append_csv_to_array "$1" SKIP_PATTERNS
+         ;;
+      *)
+         echo -e "${RED}[!] Unknown option: $1${RESET}"
+         show_help
+         ;;
+    esac
+    shift
+  done
 fi
 
-clone_repo "https://github.com/g333k/tools" "/tools"
-run_sudo chown -R "$USER:$USER" /tools
-run_sudo chmod -R 755 /tools
-
-# Copy /tools/bin binaries into /usr/bin, then remove /tools/bin
-if [[ -d "/tools/bin" ]]; then
-    echo "[*] Copying /tools/bin binaries into /usr/bin..."
-    run_sudo cp -a /tools/bin/* /usr/bin/
-    echo "[*] Removing /tools/bin..."
-    run_sudo rm -rf /tools/bin
+# Validate incompatible flags
+if $MODE_ALL && [ "${#SINGLE_MODULES[@]}" -gt 0 ]; then
+  echo -e "${RED}[!] --all and --single are mutually exclusive${RESET}"
+  exit 1
 fi
 
-
-# Install and clean helper scripts
-run_sudo /tools/windows/install_windows_tools.sh
-run_sudo /tools/linux/install_linux_tools.sh
-run_sudo rm /tools/windows/install_windows_tools.sh
-run_sudo rm /tools/linux/install_linux_tools.sh
-
-# =============================
-# CLONE WEB & SHELLS
-# =============================
-if [[ -d "/g3web" ]]; then
-    echo "[*] Removing existing /g3web..."
-    run_sudo rm -rf /g3web
-fi
-clone_repo "https://github.com/g333k/g3web" "/g3web"
-pause_and_clear
-
-
-# =============================
-# LIMPIEZA DE SUDOERS
-# =============================
-echo " [+] Cleaning up sudoers rule..."
-run_sudo rm -f /etc/sudoers.d/99_g3k_tmp
-echo " [✓] Sudoers restored"
-pause_and_clear
-
-
-
-
-# =============================
-# DNScat2 INSTALLATION
-# =============================
-cd /tools/linux/ || exit 1
-
-DNScat2_DIR="dnscat2"
-
-echo "[*] Clonando dnscat2..."
-if [[ -d "$DNScat2_DIR" ]]; then
-    echo "[*] $DNScat2_DIR ya existe, eliminando carpeta antigua..."
-    rm -rf "$DNScat2_DIR"
+# ---------- list modules ----------
+mapfile -t MODULE_FILES < <(find "$MODULES_DIR" -maxdepth 1 -type f -iname "*.sh" | sort)
+if [ "${#MODULE_FILES[@]}" -eq 0 ]; then
+    echo -e "${YELLOW}[!] No modules found in $MODULES_DIR${RESET}"
+    exit 0
 fi
 
-git clone https://github.com/iagox86/dnscat2.git "$DNScat2_DIR"
-echo "[+] dnscat2 clonado."
+if $LIST_ONLY; then
+    echo -e "${BLUE}Available modules:${RESET}"
+    for m in "${MODULE_FILES[@]}"; do
+        echo "  - $(basename "$m")"
+    done
+    exit 0
+fi
 
-# Instalar dependencias Ruby
-if [[ -f "$DNScat2_DIR/server/Gemfile" ]]; then
-    echo "[*] Instalando dependencias Ruby de dnscat2..."
-    cd "$DNScat2_DIR/server/" || exit 1
-    if ! gem list bundler -i >/dev/null 2>&1; then
-        run_sudo gem install bundler
+# If SINGLE_MODULES provided, verify exists
+if [ "${#SINGLE_MODULES[@]}" -gt 0 ]; then
+    for sm in "${SINGLE_MODULES[@]}"; do
+        found=false
+        for m in "${MODULE_FILES[@]}"; do
+            if [[ "$(basename "$m")" == "$sm" ]]; then
+                found=true
+                break
+            fi
+        done
+        if ! $found; then
+            echo -e "${RED}[!] Module not found: $sm${RESET}"
+            exit 1
+        fi
+    done
+fi
+
+# ---------- Dry-run: just show plan and exit ----------
+if $DRY_RUN; then
+    echo -e "${YELLOW}[DRY-RUN] The following modules WOULD be executed:${RESET}"
+    for m in "${MODULE_FILES[@]}"; do
+        modname="$(basename "$m")"
+        # apply single/skip filters
+        if [ "${#SINGLE_MODULES[@]}" -gt 0 ]; then
+            keep=false
+            for sm in "${SINGLE_MODULES[@]}"; do
+                if [[ "$modname" == "$sm" ]]; then keep=true; break; fi
+            done
+            $keep || continue
+        fi
+        skip=false
+        for pat in "${SKIP_PATTERNS[@]}"; do
+            if [[ "$modname" == *"$pat"* ]]; then skip=true; break; fi
+        done
+        $skip && continue
+        echo "  - $modname"
+    done
+    echo -e "${YELLOW}[DRY-RUN] No changes made.${RESET}"
+    exit 0
+fi
+
+# ---------- If update requested, git pull repo (best effort) ----------
+if $UPDATE_REPO; then
+    echo -e "${BLUE}[*] Updating installer repository...${RESET}"
+    git -C "$SCRIPT_DIR" pull || echo -e "${YELLOW}[!] Git update failed, continuing...${RESET}"
+fi
+
+# ---------- Ask for sudo password ----------
+echo -e "${BLUE}[*] This installer requires sudo privileges.${RESET}"
+while true; do
+    echo -n "🔑 Enter your sudo password: "
+    read -r -s SUDO_PASS || true
+    echo
+    if echo "$SUDO_PASS" | sudo -S -v &>/dev/null; then
+        echo -e "${GREEN}✅ Password accepted${RESET}"
+        break
+    else
+        echo -e "${RED}❌ Wrong password, try again.${RESET}"
     fi
-    sudo bundle install
-    cd /tools/linux/ || exit 1
-    echo "[+] Dependencias Ruby instaladas."
-fi
+done
 
-# Crear wrapper en /usr/bin
-echo "[*] Creando wrapper /usr/bin/dnscat2..."
-run_sudo tee /usr/bin/dnscat2 >/dev/null <<EOF
-#!/bin/bash
-ruby /tools/linux/dnscat2/server/dnscat2.rb "\$@"
-EOF
-run_sudo chmod +x /usr/bin/dnscat2
-echo "[+] Wrapper listo: puedes ejecutar 'dnscat2' desde cualquier lugar."
+# ---------- Create temporary sudoers ----------
+echo -e "${BLUE}[*] Creating temporary sudoers for pacman/makepkg/chsh/yay...${RESET}"
+SUDOERS_LINE="$USER ALL=(ALL) NOPASSWD: /usr/bin/pacman, /usr/bin/makepkg, /usr/bin/chsh, /usr/bin/yay"
+echo "$SUDO_PASS" | sudo -S bash -c "echo '$SUDOERS_LINE' > '$TMP_SUDOERS' && chmod 0440 '$TMP_SUDOERS'"
 
-# -------------------------
-#     FINAL
-# -------------------------
-echo "============================================================"
-echo " [✓] All done."
-echo " ✅ G3K installation finished!"
-echo "============================================================"
-pause_and_clear
+# ---------- Traps & cleanup ----------
+cleanup() {
+    echo -e "\n${BLUE}[*] Cleaning up temporary permissions...${RESET}"
+    if [ -f "$TMP_SUDOERS" ]; then
+        echo "$SUDO_PASS" | sudo -S rm -f "$TMP_SUDOERS" >/dev/null 2>&1 || true
+    fi
+    sudo -k 2>/dev/null || true
+    echo -e "${GREEN}[✓] Environment restored.${RESET}"
+}
+on_interrupt() {
+    echo -e "\n${RED}[!] Installation interrupted by user (Ctrl+C).${RESET}"
+    cleanup
+    exit 130
+}
+trap on_interrupt INT
+trap cleanup EXIT
+
+# Export SUDO_PASS for modules that might rely on run_sudo (if used)
+export SUDO_PASS
+
+# ---------- Main loop: run modules based on flags ----------
+echo -e "${GREEN}ArchTools Installer${RESET}"
+echo -e "${YELLOW}Modules directory:${RESET} $MODULES_DIR"
+echo
+
+for module in "${MODULE_FILES[@]}"; do
+    modname="$(basename "$module")"
+
+    # apply single filter (if provided)
+    if [ "${#SINGLE_MODULES[@]}" -gt 0 ]; then
+        keep=false
+        for sm in "${SINGLE_MODULES[@]}"; do
+            if [[ "$modname" == "$sm" ]]; then keep=true; break; fi
+        done
+        $keep || continue
+    fi
+
+    # apply skip patterns
+    skip=false
+    for pat in "${SKIP_PATTERNS[@]}"; do
+        if [[ "$modname" == *"$pat"* ]]; then skip=true; break; fi
+    done
+    if $skip; then
+        echo -e "${YELLOW}[-] Skipping ${modname} (matched skip pattern)${RESET}"
+        continue
+    fi
+
+    echo -e "\n${BLUE}--- Module: ${modname} ---${RESET}"
+
+    if $MODE_ALL; then
+        echo -e "${YELLOW}[~] Running ${modname} (all-mode)...${RESET}"
+        bash "$module" || echo -e "${RED}[!] ${modname} exited with non-zero code.${RESET}"
+        echo -e "${GREEN}✔ ${modname} finished.${RESET}"
+        continue
+    fi
+
+    # If ASSUME_YES, auto-yes. Otherwise ask interactively.
+    if $ASSUME_YES; then
+        run_it=true
+    else
+        # interactive prompt per module
+        while true; do
+            read -r -p "Install ${modname}? [Y/n] " resp
+            resp="${resp:-Y}"
+            case "$resp" in
+                [Yy]* ) run_it=true; break ;;
+                [Nn]* ) run_it=false; break ;;
+                * ) echo "Please answer Y or n." ;;
+            esac
+        done
+    fi
+
+    if $run_it; then
+        echo -e "${YELLOW}[~] Running ${modname}...${RESET}"
+        bash "$module" || echo -e "${RED}[!] ${modname} exited with non-zero code.${RESET}"
+        echo -e "${GREEN}✔ ${modname} finished.${RESET}"
+    else
+        echo -e "${YELLOW}[-] Skipped ${modname}.${RESET}"
+    fi
+done
+
+# ---------- Finalize ----------
+echo
+echo -e "${GREEN}[✓] All selected modules processed.${RESET}"
+cleanup
+echo -e "${GREEN}[✓] Installation finished successfully.${RESET}"
+exit 0
+
