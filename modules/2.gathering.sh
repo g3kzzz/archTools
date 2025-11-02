@@ -5,7 +5,7 @@ set -euo pipefail
 
 echo "[*] Installing gathering tools..."
 
-sudo pacman -S --needed --noconfirm nmap whois dnsutils traceroute curl wget git unzip >/dev/null 2>&1 || true
+sudo pacman -S --needed --noconfirm nmap whois tree dnsutils traceroute curl wget git unzip >/dev/null 2>&1 || true
 
 # AUR tools (if yay exists)
 if command -v yay >/dev/null 2>&1; then
